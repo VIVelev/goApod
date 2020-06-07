@@ -14,6 +14,7 @@ func main() {
 	if err := database.Connect(); err != nil {
 		panic(err)
 	}
+	defer database.Connection.Close()
 	testController := controllers.TestController{}
 	app := gin.Default()
 	app.Use(func(c *gin.Context) {
