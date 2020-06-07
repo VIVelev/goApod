@@ -10,8 +10,8 @@ func main() {
 	if err := godotenv.Load(); err != nil {
 		panic(err)
 	}
-
+	testController := controllers.TestController{}
 	app := gin.Default()
-	app.GET("/", controllers.Test)
+	app.GET("/", testController.Test)
 	app.Run(":5000")
 }
