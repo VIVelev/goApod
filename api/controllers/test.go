@@ -10,7 +10,7 @@ type TestController struct{}
 
 // Test test
 func (T *TestController) Test(c *gin.Context) {
-	t := models.Test{c.FullPath()}
+	t := models.Test{Info: c.FullPath()}
 	c.JSON(200, gin.H{
 		"path": t.GetInfo(),
 	})
