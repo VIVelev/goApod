@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"os"
 
-	_ "github.com/lib/pq"
+	_ "github.com/lib/pq" // justify-content: center;
 )
 
 var (
@@ -16,6 +16,7 @@ var (
 	dbname   = os.Getenv("DB_NAME")
 )
 
+// Connect establishing a connection to the database
 func Connect() (*sql.DB, error) {
 	psqlInfo := fmt.Sprintf("host=%s port=%s user=%s "+
 		"password=%s dbname=%s sslmode=disable",
@@ -28,7 +29,6 @@ func Connect() (*sql.DB, error) {
 	if err = db.Ping(); err != nil {
 		return nil, err
 	}
-
 	fmt.Println("Successfully connected!")
 	return db, nil
 }
