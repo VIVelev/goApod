@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"os"
 
-	_ "github.com/lib/pq" // justify-content: center;
+	_ "github.com/lib/pq" // postgresql
 )
 
 var (
@@ -16,19 +16,23 @@ var (
 	dbname   = os.Getenv("DB_NAME")
 )
 
+// Connection conn
+var Connection *sql.DB
+
 // Connect establishing a connection to the database
-func Connect() (*sql.DB, error) {
+func Connect() error {
 	psqlInfo := fmt.Sprintf("host=%s port=%s user=%s "+
 		"password=%s dbname=%s sslmode=disable",
 		host, port, user, password, dbname)
 
 	db, err := sql.Open("postgres", psqlInfo)
 	if err != nil {
-		return nil, err
+		return err
 	}
 	if err = db.Ping(); err != nil {
-		return nil, err
+		return err
 	}
 	fmt.Println("Successfully connected!")
-	return db, nil
+	Connection = db
+	return nil // no error !!!
 }
