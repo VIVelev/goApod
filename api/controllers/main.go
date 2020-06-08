@@ -51,15 +51,23 @@ func (*MainController) GetAuthor(c *gin.Context) {
 
 // CreateAuthor on POST /authors
 func (*MainController) CreateAuthor(c *gin.Context) {
-	// name := c.
-	// author := models.Author{Name: name}
-	// if err := author.Save(); err != nil {
-	// 	c.JSON(http.StatusInternalServerError, gin.H{
-	// 		"message": "Database error",
-	// 	})
-	// 	return
-	// }
-	// c.JSON(http.StatusCreated, gin.H{
-	// 	"message": "Inserted new author",
-	// })
+	var request struct {
+		Name string `json:"name"`
+	}
+	if err := c.ShouldBindJSON(&request); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{
+			"message": "Parsing error",
+		})
+	}
+
+	author := models.Author{Name: request.Name}
+	if err := author.Save(); err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{
+			"message": "Database error",
+		})
+		return
+	}
+	c.JSON(http.StatusCreated, gin.H{
+		"message": "Inserted new author",
+	})
 }
