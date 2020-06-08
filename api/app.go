@@ -15,7 +15,7 @@ func main() {
 	if err := database.Connect(); err != nil {
 		panic(err)
 	}
-	defer database.Connection.Close()
+	defer database.Db.Close()
 
 	app := gin.Default()
 
