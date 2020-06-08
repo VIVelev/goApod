@@ -29,5 +29,6 @@ func main() {
 
 	mainController := controllers.MainController{}
 	app.GET("/authors", mainController.GetAuthors)
+	app.GET("/authors/:id", mainController.GetAuthor)
 	app.Run(":5000")
 }
