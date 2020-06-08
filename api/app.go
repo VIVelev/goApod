@@ -30,5 +30,6 @@ func main() {
 	mainController := controllers.MainController{}
 	app.GET("/authors", mainController.GetAuthors)
 	app.GET("/authors/:id", mainController.GetAuthor)
+	app.POST("/authors", mainController.CreateAuthor)
 	app.Run(":5000")
 }

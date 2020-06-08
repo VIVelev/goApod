@@ -8,26 +8,27 @@ import (
 
 // Author model
 type Author struct {
-	ID   uint   `json:"id"`
+	ID   int    `json:"id"`
 	Name string `json:"name"`
 }
 
 // GetAuthors get all authors
 func GetAuthors() (*[]*Author, error) {
-	rows, err := database.Db.Query("select id, name from authors")
+	statement := `
+		select id, name
+		from authors`
+	rows, err := database.Db.Query(statement)
 	if err != nil {
 		return nil, err
 	}
 	defer rows.Close()
 
 	var authors []*Author
-
 	for rows.Next() {
 		var author Author
 		if err = rows.Scan(&author.ID, &author.Name); err != nil {
 			return nil, err
 		}
-
 		authors = append(authors, &author)
 	}
 
@@ -35,8 +36,12 @@ func GetAuthors() (*[]*Author, error) {
 }
 
 // GetAuthor get single author by id
-func GetAuthor(id uint) (*Author, error) {
-	row := database.Db.QueryRow("select id, name from authors where id=$1", id)
+func GetAuthor(id int) (*Author, error) {
+	statement := `
+		select id, name
+		from authors
+		where id=$1`
+	row := database.Db.QueryRow(statement, id)
 	var author Author
 	switch err := row.Scan(&author.ID, &author.Name); err {
 	case nil:
@@ -46,4 +51,15 @@ func GetAuthor(id uint) (*Author, error) {
 	default:
 		return nil, err
 	}
+}
+
+// Save insert new record
+func (a *Author) Save() error {
+	statement := `
+		insert into authors (id, name)
+		values (default, $1)`
+	if _, err := database.Db.Exec(statement, a.Name); err != nil {
+		return err
+	}
+	return nil
 }

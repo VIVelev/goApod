@@ -25,15 +25,15 @@ func (*MainController) GetAuthors(c *gin.Context) {
 
 // GetAuthor on GET /author/:id
 func (*MainController) GetAuthor(c *gin.Context) {
-	id, err := strconv.ParseUint(c.Param("id"), 10, 64)
+	id, err := strconv.Atoi(c.Param("id"))
 	if err != nil {
 		c.JSON(http.StatusUnprocessableEntity, gin.H{
-			"message": "Id not uint",
+			"message": "Id not int",
 		})
 		return
 	}
 
-	author, err := models.GetAuthor(uint(id))
+	author, err := models.GetAuthor(id)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{
 			"message": "Database error",
@@ -47,4 +47,19 @@ func (*MainController) GetAuthor(c *gin.Context) {
 		return
 	}
 	c.JSON(http.StatusOK, author)
+}
+
+// CreateAuthor on POST /authors
+func (*MainController) CreateAuthor(c *gin.Context) {
+	name := c.("name")
+	author := models.Author{Name: name}
+	if err := author.Save(); err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{
+			"message": "Database error",
+		})
+		return
+	}
+	c.JSON(http.StatusCreated, gin.H{
+		"message": "Inserted new author",
+	})
 }
