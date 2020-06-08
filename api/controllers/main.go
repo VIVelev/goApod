@@ -118,15 +118,7 @@ func (*MainController) DeleteAuthor(c *gin.Context) {
 		return
 	}
 
-	var author models.Author
-	if err := c.ShouldBindJSON(&author); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{
-			"message": "Parsing error",
-		})
-		return
-	}
-
-	author.ID = id
+	author := models.Author{ID: id}
 
 	isDeleted, err := author.Delete()
 	if err != nil {
