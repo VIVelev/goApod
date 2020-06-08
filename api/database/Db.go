@@ -8,8 +8,8 @@ import (
 	_ "github.com/lib/pq" // postgresql
 )
 
-// Connection conn
-var Connection *sql.DB
+// Db conn
+var Db *sql.DB
 
 // Connect establishing a connection to the database
 func Connect() error {
@@ -26,6 +26,6 @@ func Connect() error {
 		return err
 	}
 	fmt.Println("Successfully connected!")
-	Connection = db
+	Db = db
 	return nil // no error !!!
 }
