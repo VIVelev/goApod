@@ -40,7 +40,7 @@ func GetAuthor(id int) (*Author, error) {
 	statement := `
 		select id, name
 		from authors
-		where id=$1`
+		where id = $1`
 	row := database.Db.QueryRow(statement, id)
 	var author Author
 	switch err := row.Scan(&author.ID, &author.Name); err {
@@ -60,6 +60,27 @@ func (a *Author) Save() error {
 		values (default, $1)`
 	if _, err := database.Db.Exec(statement, a.Name); err != nil {
 		return err
+	}
+	return nil
+}
+
+// Update updates the author
+func (a *Author) Update() error {
+	statement := `
+		update authors
+		set name = $1
+		where id = $2`
+	result, err := database.Db.Exec(statement, a.Name, a.ID)
+	if err != nil {
+		return err
+	}
+
+	rowsAffected, err := result.RowsAffected()
+	if err != nil {
+		return err
+	}
+	if rowsAffected == 0 {
+		return nil // TODO return error
 	}
 	return nil
 }
