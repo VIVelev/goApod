@@ -11,12 +11,14 @@ func main() {
 	if err := godotenv.Load(); err != nil {
 		panic(err)
 	}
+
 	if err := database.Connect(); err != nil {
 		panic(err)
 	}
 	defer database.Connection.Close()
-	testController := controllers.TestController{}
+
 	app := gin.Default()
+
 	app.Use(func(c *gin.Context) {
 		c.Header("Access-Control-Allow-Origin", "*")
 		c.Header("Access-Control-Allow-Methods",
@@ -24,6 +26,8 @@ func main() {
 		c.Header("Access-Control-Allow-Headers", "Content-Type, Authorization")
 		c.Next()
 	})
-	app.GET("/", testController.Test)
+
+	mainController := controllers.MainController{}
+	app.GET("/authors", mainController.GetAuthors)
 	app.Run(":5000")
 }
