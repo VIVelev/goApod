@@ -65,22 +65,42 @@ func (a *Author) Save() error {
 }
 
 // Update updates the author
-func (a *Author) Update() error {
+func (a *Author) Update() (bool, error) {
 	statement := `
 		update authors
 		set name = $1
 		where id = $2`
 	result, err := database.Db.Exec(statement, a.Name, a.ID)
 	if err != nil {
-		return err
+		return false, err
 	}
 
 	rowsAffected, err := result.RowsAffected()
 	if err != nil {
-		return err
+		return false, err
 	}
 	if rowsAffected == 0 {
-		return nil // TODO return error
+		return false, nil
 	}
-	return nil
+	return true, nil
+}
+
+// Delete author
+func (a *Author) Delete() (bool, error) {
+	statement := `
+		delete from authors
+		where id = $1`
+	result, err := database.Db.Exec(statement, a.ID)
+	if err != nil {
+		return false, err
+	}
+
+	rowsAffected, err := result.RowsAffected()
+	if err != nil {
+		return false, err
+	}
+	if rowsAffected == 0 {
+		return false, nil
+	}
+	return true, nil
 }

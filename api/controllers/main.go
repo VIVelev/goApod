@@ -51,17 +51,14 @@ func (*MainController) GetAuthor(c *gin.Context) {
 
 // CreateAuthor on POST /authors
 func (*MainController) CreateAuthor(c *gin.Context) {
-	var request struct {
-		Name string `json:"name"`
-	}
-	if err := c.ShouldBindJSON(&request); err != nil {
+	var author models.Author
+	if err := c.ShouldBindJSON(&author); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{
 			"message": "Parsing error",
 		})
 		return
 	}
 
-	author := models.Author{Name: request.Name}
 	if err := author.Save(); err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{
 			"message": "Database error",
@@ -73,27 +70,78 @@ func (*MainController) CreateAuthor(c *gin.Context) {
 	})
 }
 
-// UpdateAuthor on PUT /authors
+// UpdateAuthor on PUT /authors/:id
 func (*MainController) UpdateAuthor(c *gin.Context) {
-	var request struct {
-		ID   int    `json:"id"`
-		Name string `json:"name"`
+	id, err := strconv.Atoi(c.Param("id"))
+	if err != nil {
+		c.JSON(http.StatusUnprocessableEntity, gin.H{
+			"message": "Id not int",
+		})
+		return
 	}
-	if err := c.ShouldBindJSON(&request); err != nil {
+
+	var author models.Author
+	if err := c.ShouldBindJSON(&author); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{
 			"message": "Parsing error",
 		})
 		return
 	}
 
-	author := models.Author{ID: request.ID, Name: request.Name}
-	if err := author.Update(); err != nil {
+	author.ID = id
+
+	isUpdated, err := author.Update()
+	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{
 			"message": "Database error",
 		})
 		return
 	}
+	if !isUpdated {
+		c.JSON(http.StatusUnprocessableEntity, gin.H{
+			"message": "Invalid id",
+		})
+		return
+	}
 	c.JSON(http.StatusOK, gin.H{
 		"message": "Author updated",
+	})
+}
+
+// DeleteAuthor on DELETE /authors/:id
+func (*MainController) DeleteAuthor(c *gin.Context) {
+	id, err := strconv.Atoi(c.Param("id"))
+	if err != nil {
+		c.JSON(http.StatusUnprocessableEntity, gin.H{
+			"message": "Id not int",
+		})
+		return
+	}
+
+	var author models.Author
+	if err := c.ShouldBindJSON(&author); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{
+			"message": "Parsing error",
+		})
+		return
+	}
+
+	author.ID = id
+
+	isDeleted, err := author.Delete()
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{
+			"message": "Database error",
+		})
+		return
+	}
+	if !isDeleted {
+		c.JSON(http.StatusUnprocessableEntity, gin.H{
+			"message": "Invalid id",
+		})
+		return
+	}
+	c.JSON(http.StatusOK, gin.H{
+		"message": "Author deleted",
 	})
 }

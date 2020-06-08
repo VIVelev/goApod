@@ -31,6 +31,7 @@ func main() {
 	app.GET("/authors", mainController.GetAuthors)
 	app.GET("/authors/:id", mainController.GetAuthor)
 	app.POST("/authors", mainController.CreateAuthor)
-	app.PUT("/authors", mainController.UpdateAuthor)
+	app.PUT("/authors/:id", mainController.UpdateAuthor)
+	app.DELETE("/authors/:id", mainController.DeleteAuthor)
 	app.Run(":5000")
 }
