@@ -4,6 +4,7 @@ import (
 	"database/sql"
 
 	"github.com/VIVelev/goApod/database"
+	"github.com/VIVelev/goApod/errors"
 )
 
 //Location model
@@ -51,7 +52,7 @@ func DeleteLocationByID(ID int) error { // TO DO: VIVelev's custom error
 		return err // database error
 	}
 	if _, err := res.RowsAffected(); err != nil {
-		return err // Invalid id error
+		return &errors.IDNotFoundError{TableName: "Locations", ID: ID}
 	}
 	return nil
 }
