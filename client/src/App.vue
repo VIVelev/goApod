@@ -1,51 +1,33 @@
 <template>
     <div id="app">
-        <div id="nav">
-            {{ msg }}
-            <router-link to="/">Home</router-link> |
-            <router-link to="/about">About</router-link>
-        </div>
         <router-view />
+        <Nav />
     </div>
 </template>
 
 <script>
+import Nav from './components/Layout/Nav'
 export default {
-    data() {
-        return {
-            msg: null,
-        }
+    components: {
+        Nav,
     },
-    created() {
-        fetch('http://localhost:5000')
-            .then(res => res.json())
-            .then(json => {
-                console.log(json)
-                this.msg = json
-            })
+    data() {
+        return {}
     },
 }
 </script>
 
 <style>
-#app {
-    font-family: Avenir, Helvetica, Arial, sans-serif;
-    -webkit-font-smoothing: antialiased;
-    -moz-osx-font-smoothing: grayscale;
-    text-align: center;
-    color: #2c3e50;
+* {
+    box-sizing: border-box;
+    outline: none;
+}
+html {
+    font-family: 'Quicksand';
 }
 
-#nav {
-    padding: 30px;
-}
-
-#nav a {
-    font-weight: bold;
-    color: #2c3e50;
-}
-
-#nav a.router-link-exact-active {
-    color: #42b983;
+body {
+    margin: 0;
+    padding: 0;
 }
 </style>
