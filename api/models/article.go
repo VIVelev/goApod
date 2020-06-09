@@ -15,6 +15,7 @@ type Article struct {
 	Text      string    `json:"text"`
 	AuthorID  int       `json:"authorId"`
 	Date      time.Time `json:"date"`
+	EventID   int       `json:"eventId"`
 }
 
 var statements = map[string]string{
@@ -35,7 +36,7 @@ func GetArticles() ([]Article, error) {
 	for rows.Next() {
 		var article Article
 		if err := rows.Scan(&article.ID, &article.Title, &article.ImagePath,
-			&article.Text, &article.AuthorID, &article.Date); err != nil {
+			&article.Text, &article.AuthorID, &article.Date, &article.EventID); err != nil {
 			return nil, err
 		}
 
@@ -51,7 +52,7 @@ func GetArticleByID(id int) (Article, error) {
 	var ret Article
 
 	switch err := row.Scan(&ret.ID, &ret.Title, &ret.ImagePath,
-		&ret.Text, &ret.AuthorID, &ret.Date); err {
+		&ret.Text, &ret.AuthorID, &ret.Date, &ret.EventID); err {
 
 	case nil:
 		return ret, nil
