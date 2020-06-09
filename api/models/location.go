@@ -2,7 +2,6 @@ package models
 
 import (
 	"database/sql"
-	"fmt"
 
 	"github.com/VIVelev/goApod/database"
 )
@@ -14,8 +13,8 @@ type Location struct {
 	Long float64 `json:"long"`
 }
 
-//GetLocation gives the Location object which matches the provided ID
-func GetLocation(ID int) (*Location, error) {
+//GetLocationByID gives the Location object which matches the provided ID
+func GetLocationByID(ID int) (*Location, error) {
 	var location Location
 	sqlStatement := `
 	SELECT * FROM locations
@@ -36,24 +35,23 @@ func (l *Location) Save() error {
 	sqlStatement := `
 	INSERT INTO locations (lat, long)
 	VALUES ($1, $2)`
-	fmt.Println(sqlStatement)
 	if _, err := database.Db.Exec(sqlStatement, l.Lat, l.Long); err != nil {
 		return err
 	}
 	return nil
 }
 
-//DeleteLocation deletes the location with id that matches the provided ID
-func DeleteLocation(ID int) error {
+//DeleteLocationByID deletes the location with id that matches the provided ID
+func DeleteLocationByID(ID int) error { // TO DO: VIVelev's custom error
 	sqlStatement := `
 	DELETE FROM locations
 	WHERE id = $1;`
 	res, err := database.Db.Exec(sqlStatement, ID)
 	if err != nil {
-		return err
+		return err // database error
 	}
 	if _, err := res.RowsAffected(); err != nil {
-		return err
+		return err // Invalid id error
 	}
 	return nil
 }

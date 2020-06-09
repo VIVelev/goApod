@@ -1,24 +1,43 @@
 package models
 
-import "time"
+import (
+	"database/sql"
+	"time"
+
+	"github.com/VIVelev/goApod/database"
+)
 
 //Event struct
 type Event struct {
-	ID         int
-	Date       time.Time
-	LocationID int
-}
-
-//GetEvents gives you all the recorded events
-func GetEvents() (*[]*Event, error) {
-	return nil, nil
+	ID         int       `json:"id"`
+	Date       time.Time `json:"date"`
+	LocationID int       `json:"locationID"`
 }
 
 //GetEventByID gives you the event which maches the provided ID
 func GetEventByID(ID int) (*Event, error) {
-	return nil, nil
+	var event Event
+	sqlStatement := `
+	SELECT * FROM events
+	WHERE id = $1`
+	row := database.Db.QueryRow(sqlStatement, ID)
+	err := row.Scan(&event.ID, &event.Date, &event.LocationID)
+	if err != nil {
+		return nil, err
+	} else if err == sql.ErrNoRows {
+		return nil, nil
+	} else {
+		return &event, nil
+	}
 }
 
-func (event *Event) save() error {
+//Save saves the event
+func (e *Event) Save() error {
+	sqlStatement := `
+	INSERT INTO events (date, location_id)
+	VALUES ($1, $2)`
+	if _, err := database.Db.Exec(sqlStatement, e.Date, e.LocationID); err != nil {
+		return err
+	}
 	return nil
 }
