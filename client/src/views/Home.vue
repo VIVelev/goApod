@@ -2,24 +2,18 @@
     <div class="page-body">
         <Intoduction />
         <div class="cp">
-            <h1>
-                Top Rated Photos
-            </h1>
+            <!-- <h1>Top rated photos</h1> -->
             <div>
                 <img
-                    src="https://apod.nasa.gov/apod/image/2006/catseye2_not_2048.jpg"
+                    v-for="(img, index) of images"
+                    :key="index"
+                    :src="img"
                     alt="ddz"
-                />
-                <img
-                    class="active"
-                    src="https://apod.nasa.gov/apod/image/2006/catseye2_not_2048.jpg"
-                    alt="ddz"
-                />
-                <img
-                    src="https://apod.nasa.gov/apod/image/2006/catseye2_not_2048.jpg"
-                    alt="ddz"
+                    :class="{ active: index === 1 }"
                 />
             </div>
+            <button @click="activeIndex++">Increment</button>
+            <button @click="activeIndex--">Decrement</button>
         </div>
     </div>
 </template>
@@ -32,10 +26,50 @@ export default {
         Parallax,
         Intoduction,
     },
+    data() {
+        return {
+            activeIndex: 0,
+            allImages: [
+                'https://cdn.spacetelescope.org/archives/images/wallpaper2/heic2007a.jpg',
+                'https://apod.nasa.gov/apod/image/2006/catseye2_not_2048.jpg',
+                'https://www.gettyimages.co.uk/gi-resources/images/500px/983801190.jpg',
+                'https://cdn.spacetelescope.org/archives/images/wallpaper2/heic2007a.jpg',
+                'https://apod.nasa.gov/apod/image/2006/catseye2_not_2048.jpg',
+                'https://www.gettyimages.co.uk/gi-resources/images/500px/983801190.jpg',
+                'https://cdn.spacetelescope.org/archives/images/wallpaper2/heic2007a.jpg',
+                'https://apod.nasa.gov/apod/image/2006/catseye2_not_2048.jpg',
+                'https://www.gettyimages.co.uk/gi-resources/images/500px/983801190.jpg',
+            ],
+        }
+    },
+    computed: {
+        images() {
+            const images = []
+            let first =
+                this.activeIndex === 0
+                    ? this.allImages[this.allImages.length - 1]
+                    : this.allImages[this.activeIndex - 1]
+            let last =
+                this.activeIndex === this.allImages.length - 1
+                    ? this.allImages[0]
+                    : this.allImages[this.activeIndex + 1]
+            images[0] = first
+            images[1] = this.allImages[this.activeIndex]
+            images[2] = last
+            if (this.activeIndex === this.allImages.length - 1) {
+                this.activeIndex = 0
+            }
+
+            return images
+        },
+    },
 }
 </script>
 
 <style scoped>
+* {
+    box-sizing: border-box;
+}
 .page-body {
     display: flex;
     flex-direction: column;
@@ -43,40 +77,30 @@ export default {
 .cp {
     display: flex;
     flex-direction: column;
-    align-items: center;
     justify-content: center;
-    max-width: 1500px;
+    align-items: center;
     width: 100%;
+    max-width: 1500px;
     margin: auto;
-    height: 75vh;
-    background-color: rgb(255, 255, 255);
+    height: 100vh;
 }
 .cp div {
     display: flex;
     flex-direction: row;
-    max-height: 60%;
-    overflow: hidden;
-    width: 90%;
-    align-items: center;
-    padding: 0 1rem;
-    justify-content: center;
-}
-h1 {
-    color: black;
-    font-size: 4rem;
+    /* max-width: 1500px; */
+    width: 100%;
+    justify-content: space-between;
 }
 img {
-    height: 100%;
     display: block;
-    margin: 2rem;
-    filter: blur(1rem);
-    transform: scale(0.8);
+    max-width: 30%;
+    /* filter: blur(); */
+    transform: scale(0.7);
     opacity: 0.7;
 }
 .active {
-    filter: brightness();
-    align-self: center;
-    transform: scale(1.1);
+    /* filter: brightness(); */
+    transform: scale(1);
     opacity: 1;
 }
 @media (max-width: 800px) {
