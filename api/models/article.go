@@ -19,14 +19,18 @@ type Article struct {
 	EventID   int       `json:"eventId"`
 }
 
+// SQL statements
 var statements = map[string]string{
-	"GetArticles":    "select * from articles",
+	"GetAllArticles": "select * from articles",
 	"GetArticleByID": "select * from articles where id = $1",
+	"Save": `insert into articles values
+	 (default, $1, $2, $3, $4, $5, $6)`,
+	"Delete": `delete from articles where id = $1`,
 }
 
-// GetArticles - returns all articles
-func GetArticles() ([]Article, error) {
-	rows, err := database.Db.Query(statements["GetArticles"])
+// GetAllArticles - returns all articles
+func GetAllArticles() ([]Article, error) {
+	rows, err := database.Db.Query(statements["GetAllArticles"])
 	defer rows.Close()
 
 	if err != nil {
@@ -36,8 +40,12 @@ func GetArticles() ([]Article, error) {
 	var articles []Article
 	for rows.Next() {
 		var article Article
-		if err := rows.Scan(&article.ID, &article.Title, &article.ImagePath,
-			&article.Text, &article.AuthorID, &article.Date, &article.EventID); err != nil {
+		if err := rows.Scan(
+			&article.ID, &article.Title,
+			&article.ImagePath, &article.Text,
+			&article.AuthorID, &article.Date,
+			&article.EventID); err != nil {
+
 			return nil, err
 		}
 
@@ -62,4 +70,35 @@ func GetArticleByID(id int) (Article, error) {
 	default:
 		return ret, err
 	}
+}
+
+// Save a new article
+func (a *Article) Save() error {
+	if _, err := database.Db.Exec(statements["Save"],
+		a.Title, a.ImagePath,
+		a.Text, a.AuthorID,
+		a.Date, a.EventID); err != nil {
+
+		return err
+	}
+
+	return nil
+}
+
+// Delete an article
+func (a *Article) Delete() error {
+	result, err := database.Db.Exec(statements["Delete"], a.ID)
+	if err != nil {
+		return err
+	}
+
+	rowsAffected, err := result.RowsAffected()
+	if err != nil {
+		return err
+	}
+	if rowsAffected == 0 {
+		return &errors.IDNotFoundError{TableName: "articles", ID: a.ID}
+	}
+
+	return nil
 }
