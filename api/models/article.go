@@ -87,7 +87,12 @@ func (a *Article) Save() error {
 
 // Delete an article
 func (a *Article) Delete() error {
-	result, err := database.Db.Exec(statements["Delete"], a.ID)
+	return DeleteArticleByID(a.ID)
+}
+
+// DeleteArticleByID - delete by id
+func DeleteArticleByID(id int) error {
+	result, err := database.Db.Exec(statements["Delete"], id)
 	if err != nil {
 		return err
 	}
@@ -97,7 +102,7 @@ func (a *Article) Delete() error {
 		return err
 	}
 	if rowsAffected == 0 {
-		return &errors.IDNotFoundError{TableName: "articles", ID: a.ID}
+		return &errors.IDNotFoundError{TableName: "articles", ID: id}
 	}
 
 	return nil
