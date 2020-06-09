@@ -25,7 +25,7 @@ var statements = map[string]string{
 	"GetArticleByID": "select * from articles where id = $1",
 	"Save": `insert into articles values
 	 (default, $1, $2, $3, $4, $5, $6)`,
-	"Delete": `delete from articles where id = $1`,
+	"DeleteArticleByID": `delete from articles where id = $1`,
 }
 
 // GetAllArticles - returns all articles
@@ -72,7 +72,7 @@ func GetArticleByID(id int) (Article, error) {
 	}
 }
 
-// Save a new article
+// Save (insert) a new article
 func (a *Article) Save() error {
 	if _, err := database.Db.Exec(statements["Save"],
 		a.Title, a.ImagePath,
@@ -92,7 +92,7 @@ func (a *Article) Delete() error {
 
 // DeleteArticleByID - delete by id
 func DeleteArticleByID(id int) error {
-	result, err := database.Db.Exec(statements["Delete"], id)
+	result, err := database.Db.Exec(statements["DeleteArticleByID"], id)
 	if err != nil {
 		return err
 	}
