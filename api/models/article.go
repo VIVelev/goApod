@@ -5,6 +5,7 @@ import (
 	"time"
 
 	"github.com/VIVelev/goApod/database"
+	"github.com/VIVelev/goApod/errors"
 )
 
 // Article model
@@ -57,7 +58,7 @@ func GetArticleByID(id int) (Article, error) {
 	case nil:
 		return ret, nil
 	case sql.ErrNoRows:
-		return ret, nil
+		return ret, &errors.IDNotFoundError{TableName: "articles", ID: id}
 	default:
 		return ret, err
 	}
