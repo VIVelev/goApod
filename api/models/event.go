@@ -12,8 +12,8 @@ import (
 type Event struct {
 	ID         int       `json:"id"`
 	Date       time.Time `json:"date"`
-	LocationID int       `json:"locationID"`
-	AticleID   int       `json:"AticleID"`
+	LocationID int       `json:"locationId"`
+	ArticleID  int       `json:"articleId"`
 }
 
 var eventStatements = map[string]string{
@@ -31,7 +31,7 @@ func GetEventByID(ID int) (*Event, error) {
 	row := database.Db.QueryRow(eventStatements["GetEventByID"], ID)
 
 	switch err := row.Scan(&event.ID, &event.Date,
-		&event.LocationID, &event.AticleID); err {
+		&event.LocationID, &event.ArticleID); err {
 
 	case nil:
 		return &event, nil
@@ -45,9 +45,9 @@ func GetEventByID(ID int) (*Event, error) {
 //Save saves the event
 func (e *Event) Save() (*Event, error) {
 	row := database.Db.QueryRow(
-		eventStatements["Save"], e.Date, e.LocationID, e.AticleID)
+		eventStatements["Save"], e.Date, e.LocationID, e.ArticleID)
 
-	err := row.Scan(&e.ID, &e.Date, &e.LocationID, &e.AticleID)
+	err := row.Scan(&e.ID, &e.Date, &e.LocationID, &e.ArticleID)
 	if err != nil {
 		return nil, err
 	}

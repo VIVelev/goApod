@@ -8,15 +8,15 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-// MainController of the app
-type MainController struct{}
+// AuthorController - manages authors
+type AuthorController struct{}
 
 // GetAuthors on GET /authors
-func (*MainController) GetAuthors(c *gin.Context) {
-	authors, err := models.GetAuthors()
+func (*AuthorController) GetAuthors(c *gin.Context) {
+	authors, err := models.GetAllAuthors()
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{
-			"message": "Database error",
+		c.JSON(err.Code(), gin.H{
+			"message": err.Error(),
 		})
 		return
 	}
@@ -24,7 +24,7 @@ func (*MainController) GetAuthors(c *gin.Context) {
 }
 
 // GetAuthor on GET /author/:id
-func (*MainController) GetAuthor(c *gin.Context) {
+func (*AuthorController) GetAuthor(c *gin.Context) {
 	id, err := strconv.Atoi(c.Param("id"))
 	if err != nil {
 		c.JSON(http.StatusUnprocessableEntity, gin.H{
@@ -33,16 +33,10 @@ func (*MainController) GetAuthor(c *gin.Context) {
 		return
 	}
 
-	author, err := models.GetAuthor(id)
+	author, dbErr := models.GetAuthorByID(id)
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{
-			"message": "Database error",
-		})
-		return
-	}
-	if author == nil {
-		c.JSON(http.StatusNotFound, gin.H{
-			"message": "Invalid id",
+		c.JSON(dbErr.Code(), gin.H{
+			"message": err.Error(),
 		})
 		return
 	}
@@ -50,7 +44,7 @@ func (*MainController) GetAuthor(c *gin.Context) {
 }
 
 // CreateAuthor on POST /authors
-func (*MainController) CreateAuthor(c *gin.Context) {
+func (*AuthorController) CreateAuthor(c *gin.Context) {
 	var author models.Author
 	if err := c.ShouldBindJSON(&author); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{
@@ -59,9 +53,9 @@ func (*MainController) CreateAuthor(c *gin.Context) {
 		return
 	}
 
-	if err := author.Save(); err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{
-			"message": "Database error",
+	if dbErr := author.Save(); dbErr != nil {
+		c.JSON(dbErr.Code(), gin.H{
+			"message": dbErr.Error(),
 		})
 		return
 	}
@@ -71,7 +65,7 @@ func (*MainController) CreateAuthor(c *gin.Context) {
 }
 
 // UpdateAuthor on PUT /authors/:id
-func (*MainController) UpdateAuthor(c *gin.Context) {
+func (*AuthorController) UpdateAuthor(c *gin.Context) {
 	id, err := strconv.Atoi(c.Param("id"))
 	if err != nil {
 		c.JSON(http.StatusUnprocessableEntity, gin.H{
@@ -90,16 +84,10 @@ func (*MainController) UpdateAuthor(c *gin.Context) {
 
 	author.ID = id
 
-	isUpdated, err := author.Update()
-	if err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{
-			"message": "Database error",
-		})
-		return
-	}
-	if !isUpdated {
-		c.JSON(http.StatusUnprocessableEntity, gin.H{
-			"message": "Invalid id",
+	dbErr := author.Update()
+	if dbErr != nil {
+		c.JSON(dbErr.Code(), gin.H{
+			"message": dbErr.Error(),
 		})
 		return
 	}
@@ -109,7 +97,7 @@ func (*MainController) UpdateAuthor(c *gin.Context) {
 }
 
 // DeleteAuthor on DELETE /authors/:id
-func (*MainController) DeleteAuthor(c *gin.Context) {
+func (*AuthorController) DeleteAuthor(c *gin.Context) {
 	id, err := strconv.Atoi(c.Param("id"))
 	if err != nil {
 		c.JSON(http.StatusUnprocessableEntity, gin.H{
@@ -120,16 +108,10 @@ func (*MainController) DeleteAuthor(c *gin.Context) {
 
 	author := models.Author{ID: id}
 
-	isDeleted, err := author.Delete()
+	dbErr := author.Delete()
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{
-			"message": "Database error",
-		})
-		return
-	}
-	if !isDeleted {
-		c.JSON(http.StatusUnprocessableEntity, gin.H{
-			"message": "Invalid id",
+			"message": dbErr.Error(),
 		})
 		return
 	}
