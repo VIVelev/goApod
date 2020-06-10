@@ -1,11 +1,5 @@
 <template>
-    <transition-group
-        mode="out-in"
-        tag="div"
-        class="container"
-        enter-active-class=""
-        leave-active-class="animate__animated"
-    >
+    <transition-group mode="out-in" tag="div" class="container">
         <Slides
             v-for="(img, index) of $store.getters.images"
             :key="index"

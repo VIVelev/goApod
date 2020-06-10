@@ -3,7 +3,12 @@
         v-show="index === $store.getters.activeElement || side"
         :class="side ? 'side' : 'center'"
     >
-        <img :src="img" alt="picture" />
+        <img
+            :src="img"
+            alt="picture"
+            @click="$router.push({ path: '/today' })"
+        />
+        <!-- should go to the article -->
         <template v-if="index === $store.getters.activeElement">
             <button @click="$store.commit('prev')" class="arrow">
                 <i class="material-icons">chevron_left</i>
@@ -25,6 +30,7 @@ export default {
     data() {
         return {
             liked: false,
+            moreInfo: false,
         }
     },
     computed: {
@@ -37,7 +43,11 @@ export default {
     },
     methods: {
         like() {
-            this.liked = !this.liked
+            if (this.$store.getters.user) {
+                this.liked = !this.liked
+            } else {
+                this.$store.commit('modifyPopUp', true)
+            }
         },
     },
 }
@@ -96,6 +106,37 @@ button:hover {
 }
 .center {
     position: absolute;
-    z-index: 2;
+    z-index: 1;
+}
+.more-info {
+    position: absolute;
+    font-size: 1rem;
+    color: rgba(255, 255, 255, 0.377);
+    bottom: 0.5rem;
+    left: 0.75rem;
+    padding: 0;
+    display: flex;
+}
+.more-info i {
+    font-size: 1.5rem;
+    color: rgba(255, 255, 255, 0.795);
+}
+
+.more-info i:hover {
+    color: white;
+}
+
+.more-info button {
+    border: none;
+    background-color: transparent;
+    transform: scale(1);
+    padding: 0;
+}
+p {
+    margin: 0;
+    margin-bottom: 0.4rem;
+    text-align: center;
+    color: white;
+    cursor: pointer;
 }
 </style>

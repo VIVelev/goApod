@@ -10,6 +10,12 @@
                         Todays Picture
                     </router-link>
                 </li>
+                <li v-if="$store.getters.user">
+                    <p @click="$store.commit('changeUser', null)">Logout</p>
+                </li>
+                <li v-else>
+                    <p @click="$store.commit('modifyPopUp', true)">Sign in</p>
+                </li>
             </div>
             <li class="burger">
                 <div></div>

@@ -41,13 +41,13 @@ func GetLocationByID(ID int) (*Location, error) {
 }
 
 //Save - saves the Location object on which you call this method
-func (l *Location) Save() (*Location, error) {
+func (l *Location) Save() error {
 	row := database.Db.QueryRow(locationStatements["Save"], l.Lat, l.Long)
 	err := row.Scan(&l.ID, &l.Lat, &l.Long)
 	if err != nil {
-		return nil, err
+		return err
 	}
-	return l, nil
+	return nil
 }
 
 //DeleteLocationByID deletes the location with id that matches the provided ID

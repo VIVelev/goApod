@@ -43,13 +43,13 @@ func GetEventByID(ID int) (*Event, error) {
 }
 
 //Save saves the event
-func (e *Event) Save() (*Event, error) {
+func (e *Event) Save() error {
 	row := database.Db.QueryRow(
 		eventStatements["Save"], e.Date, e.LocationID, e.ArticleID)
 
 	err := row.Scan(&e.ID, &e.Date, &e.LocationID, &e.ArticleID)
 	if err != nil {
-		return nil, err
+		return err
 	}
-	return e, nil
+	return nil
 }
