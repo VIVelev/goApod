@@ -27,11 +27,11 @@ func main() {
 		c.Next()
 	})
 
-	mainController := controllers.MainController{}
-	app.GET("/authors", mainController.GetAuthors)
-	app.GET("/authors/:id", mainController.GetAuthor)
-	app.POST("/authors", mainController.CreateAuthor)
-	app.PUT("/authors/:id", mainController.UpdateAuthor)
-	app.DELETE("/authors/:id", mainController.DeleteAuthor)
+	authorController := controllers.AuthorController{}
+	app.GET("/authors", authorController.GetAuthors)
+	app.GET("/authors/:id", authorController.GetAuthor)
+	app.POST("/authors", authorController.CreateAuthor)
+	app.PUT("/authors/:id", authorController.UpdateAuthor)
+	app.DELETE("/authors/:id", authorController.DeleteAuthor)
 	app.Run(":5000")
 }

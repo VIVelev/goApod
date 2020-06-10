@@ -4,6 +4,7 @@ import (
 	"database/sql"
 
 	"github.com/VIVelev/goApod/database"
+	"github.com/VIVelev/goApod/errors"
 )
 
 // Author model
@@ -13,13 +14,13 @@ type Author struct {
 }
 
 // GetAuthors get all authors
-func GetAuthors() (*[]*Author, error) {
+func GetAuthors() (*[]*Author, errors.DatabaseError) {
 	statement := `
 		select id, name
 		from authors`
 	rows, err := database.Db.Query(statement)
 	if err != nil {
-		return nil, err
+		return nil, &errors.InternalDatabaseError{Message: err.Error()}
 	}
 	defer rows.Close()
 
@@ -27,7 +28,7 @@ func GetAuthors() (*[]*Author, error) {
 	for rows.Next() {
 		var author Author
 		if err = rows.Scan(&author.ID, &author.Name); err != nil {
-			return nil, err
+			return nil, &errors.InternalDatabaseError{Message: err.Error()}
 		}
 		authors = append(authors, &author)
 	}
@@ -36,7 +37,7 @@ func GetAuthors() (*[]*Author, error) {
 }
 
 // GetAuthor get single author by id
-func GetAuthor(id int) (*Author, error) {
+func GetAuthor(id int) (*Author, errors.DatabaseError) {
 	statement := `
 		select id, name
 		from authors
@@ -47,60 +48,60 @@ func GetAuthor(id int) (*Author, error) {
 	case nil:
 		return &author, nil
 	case sql.ErrNoRows:
-		return nil, nil
+		return nil, &errors.IDNotFoundError{TableName: "authors", ID: id}
 	default:
-		return nil, err
+		return nil, &errors.InternalDatabaseError{Message: err.Error()}
 	}
 }
 
 // Save insert new record
-func (a *Author) Save() error {
+func (a *Author) Save() errors.DatabaseError {
 	statement := `
 		insert into authors (id, name)
 		values (default, $1)`
 	if _, err := database.Db.Exec(statement, a.Name); err != nil {
-		return err
+		return &errors.InternalDatabaseError{Message: err.Error()}
 	}
 	return nil
 }
 
 // Update updates the author
-func (a *Author) Update() (bool, error) {
+func (a *Author) Update() errors.DatabaseError {
 	statement := `
 		update authors
 		set name = $1
 		where id = $2`
 	result, err := database.Db.Exec(statement, a.Name, a.ID)
 	if err != nil {
-		return false, err
+		return &errors.InternalDatabaseError{Message: err.Error()}
 	}
 
 	rowsAffected, err := result.RowsAffected()
 	if err != nil {
-		return false, err
+		return &errors.InternalDatabaseError{Message: err.Error()}
 	}
 	if rowsAffected == 0 {
-		return false, nil
+		return &errors.IDNotFoundError{TableName: "authors", ID: a.ID}
 	}
-	return true, nil
+	return nil
 }
 
 // Delete author
-func (a *Author) Delete() (bool, error) {
+func (a *Author) Delete() errors.DatabaseError {
 	statement := `
 		delete from authors
 		where id = $1`
 	result, err := database.Db.Exec(statement, a.ID)
 	if err != nil {
-		return false, err
+		return &errors.InternalDatabaseError{Message: err.Error()}
 	}
 
 	rowsAffected, err := result.RowsAffected()
 	if err != nil {
-		return false, err
+		return &errors.InternalDatabaseError{Message: err.Error()}
 	}
 	if rowsAffected == 0 {
-		return false, nil
+		return &errors.IDNotFoundError{TableName: "authors", ID: a.ID}
 	}
-	return true, nil
+	return nil
 }
