@@ -21,11 +21,20 @@ type Article struct {
 
 // SQL statements
 var statements = map[string]string{
-	"GetAllArticles": "select * from articles",
-	"GetArticleByID": "select * from articles where id = $1",
-	"Save": `insert into articles values
-	 (default, $1, $2, $3, $4, $5, $6)`,
-	"DeleteArticleByID": `delete from articles where id = $1`,
+	"GetAllArticles": `
+		select * from articles`,
+
+	"GetArticleByID": `
+		select * from articles
+		where id = $1`,
+
+	"Save": `
+		insert into articles values
+		(default, $1, $2, $3, $4, $5, $6)`,
+
+	"DeleteArticleByID": `
+		delete from articles
+		where id = $1`,
 }
 
 // GetAllArticles - returns all articles
