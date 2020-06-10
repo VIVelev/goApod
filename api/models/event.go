@@ -5,6 +5,7 @@ import (
 	"time"
 
 	"github.com/VIVelev/goApod/database"
+	"github.com/VIVelev/goApod/errors"
 )
 
 //Event struct
@@ -15,30 +16,40 @@ type Event struct {
 	ArticleID  int       `json:"articleId"`
 }
 
+var eventStatements = map[string]string{
+	"GetEventByID": `
+		SELECT * FROM events
+		WHERE id = $1`,
+	"Save": `
+		INSERT INTO events (date, location_id, article_id)
+		VALUES ($1, $2, $3)`,
+}
+
 //GetEventByID gives you the event which maches the provided ID
 func GetEventByID(ID int) (*Event, error) {
 	var event Event
-	sqlStatement := `
-	SELECT * FROM events
-	WHERE id = $1`
-	row := database.Db.QueryRow(sqlStatement, ID)
-	err := row.Scan(&event.ID, &event.Date, &event.LocationID, &event.ArticleID)
-	if err != nil {
-		return nil, err
-	} else if err == sql.ErrNoRows {
-		return nil, nil
-	} else {
+	row := database.Db.QueryRow(eventStatements["GetEventByID"], ID)
+
+	switch err := row.Scan(&event.ID, &event.Date,
+		&event.LocationID, &event.ArticleID); err {
+
+	case nil:
 		return &event, nil
+	case sql.ErrNoRows:
+		return nil, &errors.IDNotFoundError{TableName: "events", ID: ID}
+	default:
+		return nil, err
 	}
 }
 
 //Save saves the event
-func (e *Event) Save() error {
-	sqlStatement := `
-	INSERT INTO events (date, location_id, article_id)
-	VALUES ($1, $2, $3)`
-	if _, err := database.Db.Exec(sqlStatement, e.Date, e.LocationID, e.ArticleID); err != nil {
-		return err
+func (e *Event) Save() (*Event, error) {
+	row := database.Db.QueryRow(
+		eventStatements["Save"], e.Date, e.LocationID, e.ArticleID)
+
+	err := row.Scan(&e.ID, &e.Date, &e.LocationID, &e.ArticleID)
+	if err != nil {
+		return nil, err
 	}
-	return nil
+	return e, nil
 }

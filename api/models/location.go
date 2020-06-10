@@ -4,6 +4,7 @@ import (
 	"database/sql"
 
 	"github.com/VIVelev/goApod/database"
+	"github.com/VIVelev/goApod/errors"
 )
 
 //Location model
@@ -13,13 +14,22 @@ type Location struct {
 	Long float64 `json:"long"`
 }
 
+var locationStatements = map[string]string{
+	"GetLocationByID": `
+		SELECT * FROM locations
+		WHERE id = $1`,
+	"Save": `
+		INSERT INTO locations (lat, long)
+		VALUES ($1, $2)`,
+	"DeleteLocationByID": `
+		DELETE FROM locations
+		WHERE id = $1`,
+}
+
 //GetLocationByID gives the Location object which matches the provided ID
 func GetLocationByID(ID int) (*Location, error) {
 	var location Location
-	sqlStatement := `
-	SELECT * FROM locations
-	WHERE id = $1`
-	row := database.Db.QueryRow(sqlStatement, ID)
+	row := database.Db.QueryRow(locationStatements["GetLocationByID"], ID)
 	err := row.Scan(&location.ID, &location.Lat, &location.Long)
 	if err != nil {
 		return nil, err
@@ -31,27 +41,23 @@ func GetLocationByID(ID int) (*Location, error) {
 }
 
 //Save - saves the Location object on which you call this method
-func (l *Location) Save() error {
-	sqlStatement := `
-	INSERT INTO locations (lat, long)
-	VALUES ($1, $2)`
-	if _, err := database.Db.Exec(sqlStatement, l.Lat, l.Long); err != nil {
-		return err
+func (l *Location) Save() (*Location, error) {
+	row := database.Db.QueryRow(locationStatements["Save"], l.Lat, l.Long)
+	err := row.Scan(&l.ID, &l.Lat, &l.Long)
+	if err != nil {
+		return nil, err
 	}
-	return nil
+	return l, nil
 }
 
 //DeleteLocationByID deletes the location with id that matches the provided ID
-func DeleteLocationByID(ID int) error { // TO DO: VIVelev's custom error
-	sqlStatement := `
-	DELETE FROM locations
-	WHERE id = $1;`
-	res, err := database.Db.Exec(sqlStatement, ID)
+func DeleteLocationByID(ID int) error {
+	res, err := database.Db.Exec(locationStatements["DeleteLocationByID"], ID)
 	if err != nil {
-		return err // database error
+		return err
 	}
 	if _, err := res.RowsAffected(); err != nil {
-		return err // Invalid id error
+		return &errors.IDNotFoundError{TableName: "Locations", ID: ID}
 	}
 	return nil
 }
