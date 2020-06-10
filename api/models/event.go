@@ -11,8 +11,8 @@ import (
 type Event struct {
 	ID         int       `json:"id"`
 	Date       time.Time `json:"date"`
-	LocationID int       `json:"locationID"`
-	AticleID   int       `json:"AticleID"`
+	LocationID int       `json:"locationId"`
+	ArticleID  int       `json:"articleId"`
 }
 
 //GetEventByID gives you the event which maches the provided ID
@@ -22,7 +22,7 @@ func GetEventByID(ID int) (*Event, error) {
 	SELECT * FROM events
 	WHERE id = $1`
 	row := database.Db.QueryRow(sqlStatement, ID)
-	err := row.Scan(&event.ID, &event.Date, &event.LocationID, &event.AticleID)
+	err := row.Scan(&event.ID, &event.Date, &event.LocationID, &event.ArticleID)
 	if err != nil {
 		return nil, err
 	} else if err == sql.ErrNoRows {
@@ -37,7 +37,7 @@ func (e *Event) Save() error {
 	sqlStatement := `
 	INSERT INTO events (date, location_id, article_id)
 	VALUES ($1, $2, $3)`
-	if _, err := database.Db.Exec(sqlStatement, e.Date, e.LocationID, e.AticleID); err != nil {
+	if _, err := database.Db.Exec(sqlStatement, e.Date, e.LocationID, e.ArticleID); err != nil {
 		return err
 	}
 	return nil

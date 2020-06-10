@@ -10,13 +10,13 @@ import (
 
 // Article model
 type Article struct {
-	ID        int       `json:"id"`
-	Title     string    `json:"title"`
-	ImagePath string    `json:"imagePath"`
-	Text      string    `json:"text"`
-	AuthorID  int       `json:"authorId"`
-	Date      time.Time `json:"date"`
-	EventID   int       `json:"eventId"`
+	ID       int       `json:"id"`
+	Title    string    `json:"title"`
+	ImageURL string    `json:"imageUrl"`
+	Text     string    `json:"text"`
+	AuthorID int       `json:"authorId"`
+	Date     time.Time `json:"date"`
+	EventID  int       `json:"eventId"`
 }
 
 // SQL statements
@@ -42,7 +42,7 @@ func GetAllArticles() ([]Article, error) {
 		var article Article
 		if err := rows.Scan(
 			&article.ID, &article.Title,
-			&article.ImagePath, &article.Text,
+			&article.ImageURL, &article.Text,
 			&article.AuthorID, &article.Date,
 			&article.EventID); err != nil {
 
@@ -60,7 +60,7 @@ func GetArticleByID(id int) (Article, error) {
 	row := database.Db.QueryRow(statements["GetArticleByID"])
 	var ret Article
 
-	switch err := row.Scan(&ret.ID, &ret.Title, &ret.ImagePath,
+	switch err := row.Scan(&ret.ID, &ret.Title, &ret.ImageURL,
 		&ret.Text, &ret.AuthorID, &ret.Date, &ret.EventID); err {
 
 	case nil:
@@ -75,7 +75,7 @@ func GetArticleByID(id int) (Article, error) {
 // Save (insert) a new article
 func (a *Article) Save() error {
 	if _, err := database.Db.Exec(statements["Save"],
-		a.Title, a.ImagePath,
+		a.Title, a.ImageURL,
 		a.Text, a.AuthorID,
 		a.Date, a.EventID); err != nil {
 
