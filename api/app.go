@@ -27,11 +27,41 @@ func main() {
 		c.Next()
 	})
 
-	mainController := controllers.MainController{}
-	app.GET("/authors", mainController.GetAuthors)
-	app.GET("/authors/:id", mainController.GetAuthor)
-	app.POST("/authors", mainController.CreateAuthor)
-	app.PUT("/authors/:id", mainController.UpdateAuthor)
-	app.DELETE("/authors/:id", mainController.DeleteAuthor)
+	pathControllerMap := map[string]interface{}{
+		"/authors":  controllers.AuthorController{},
+		"/articles": controllers.ArticleController{},
+	}
+
+	registerControllers(app, pathControllerMap)
 	app.Run(":5000")
+}
+
+func registerControllers(app *gin.Engine, pathControllerMap map[string]interface{}) {
+	for path, cont := range pathControllerMap {
+
+		// All Getters
+		if allGetter, ok := cont.(controllers.AllGetter); ok {
+			app.GET(path, allGetter.GetAll)
+		}
+
+		// By ID Getters
+		if byIDGetter, ok := cont.(controllers.ByIDGetter); ok {
+			app.GET(path+"/:id", byIDGetter.GetByID)
+		}
+
+		// Entity Creators
+		if creator, ok := cont.(controllers.Creator); ok {
+			app.POST(path, creator.Create)
+		}
+
+		// By ID Updaters
+		if byIDUpdater, ok := cont.(controllers.ByIDUpdater); ok {
+			app.PUT(path+"/:id", byIDUpdater.UpdateByID)
+		}
+
+		// By ID Deleters
+		if byIDDeleter, ok := cont.(controllers.ByIDDeleter); ok {
+			app.DELETE(path+"/:id", byIDDeleter.DeleteByID)
+		}
+	}
 }

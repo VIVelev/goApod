@@ -20,7 +20,7 @@ type Article struct {
 }
 
 // SQL statements
-var statements = map[string]string{
+var articleStatements = map[string]string{
 	"GetAllArticles": `
 		select * from articles`,
 
@@ -39,7 +39,7 @@ var statements = map[string]string{
 
 // GetAllArticles - returns all articles
 func GetAllArticles() ([]Article, error) {
-	rows, err := database.Db.Query(statements["GetAllArticles"])
+	rows, err := database.Db.Query(articleStatements["GetAllArticles"])
 	defer rows.Close()
 
 	if err != nil {
@@ -66,7 +66,7 @@ func GetAllArticles() ([]Article, error) {
 
 // GetArticleByID - get single article by id
 func GetArticleByID(id int) (Article, error) {
-	row := database.Db.QueryRow(statements["GetArticleByID"])
+	row := database.Db.QueryRow(articleStatements["GetArticleByID"])
 	var ret Article
 
 	switch err := row.Scan(&ret.ID, &ret.Title, &ret.ImageURL,
@@ -83,7 +83,7 @@ func GetArticleByID(id int) (Article, error) {
 
 // Save (insert) a new article
 func (a *Article) Save() error {
-	if _, err := database.Db.Exec(statements["Save"],
+	if _, err := database.Db.Exec(articleStatements["Save"],
 		a.Title, a.ImageURL,
 		a.Text, a.AuthorID,
 		a.Date, a.EventID); err != nil {
@@ -101,7 +101,7 @@ func (a *Article) Delete() error {
 
 // DeleteArticleByID - delete by id
 func DeleteArticleByID(id int) error {
-	result, err := database.Db.Exec(statements["DeleteArticleByID"], id)
+	result, err := database.Db.Exec(articleStatements["DeleteArticleByID"], id)
 	if err != nil {
 		return err
 	}
