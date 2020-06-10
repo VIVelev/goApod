@@ -13,7 +13,7 @@ type AuthorController struct{}
 
 // GetAuthors on GET /authors
 func (*AuthorController) GetAuthors(c *gin.Context) {
-	authors, err := models.GetAuthors()
+	authors, err := models.GetAllAuthors()
 	if err != nil {
 		c.JSON(err.Code(), gin.H{
 			"message": err.Error(),
@@ -33,7 +33,7 @@ func (*AuthorController) GetAuthor(c *gin.Context) {
 		return
 	}
 
-	author, dbErr := models.GetAuthor(id)
+	author, dbErr := models.GetAuthorByID(id)
 	if err != nil {
 		c.JSON(dbErr.Code(), gin.H{
 			"message": err.Error(),

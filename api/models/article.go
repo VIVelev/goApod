@@ -20,7 +20,7 @@ type Article struct {
 }
 
 // SQL statements
-var statements = map[string]string{
+var articleStatements = map[string]string{
 	"GetAllArticles": `
 		select * from articles`,
 
@@ -38,12 +38,12 @@ var statements = map[string]string{
 }
 
 // GetAllArticles - returns all articles
-func GetAllArticles() ([]Article, error) {
-	rows, err := database.Db.Query(statements["GetAllArticles"])
+func GetAllArticles() ([]Article, errors.DatabaseError) {
+	rows, err := database.Db.Query(articleStatements["GetAllArticles"])
 	defer rows.Close()
 
 	if err != nil {
-		return nil, err
+		return nil, &errors.InternalDatabaseError{Message: err.Error()}
 	}
 
 	var articles []Article
@@ -55,7 +55,7 @@ func GetAllArticles() ([]Article, error) {
 			&article.AuthorID, &article.Date,
 			&article.EventID); err != nil {
 
-			return nil, err
+			return nil, &errors.InternalDatabaseError{Message: err.Error()}
 		}
 
 		articles = append(articles, article)
@@ -65,8 +65,8 @@ func GetAllArticles() ([]Article, error) {
 }
 
 // GetArticleByID - get single article by id
-func GetArticleByID(id int) (Article, error) {
-	row := database.Db.QueryRow(statements["GetArticleByID"])
+func GetArticleByID(id int) (Article, errors.DatabaseError) {
+	row := database.Db.QueryRow(articleStatements["GetArticleByID"])
 	var ret Article
 
 	switch err := row.Scan(&ret.ID, &ret.Title, &ret.ImageURL,
@@ -77,38 +77,38 @@ func GetArticleByID(id int) (Article, error) {
 	case sql.ErrNoRows:
 		return ret, &errors.IDNotFoundError{TableName: "articles", ID: id}
 	default:
-		return ret, err
+		return ret, &errors.InternalDatabaseError{Message: err.Error()}
 	}
 }
 
 // Save (insert) a new article
-func (a *Article) Save() error {
-	if _, err := database.Db.Exec(statements["Save"],
+func (a *Article) Save() errors.DatabaseError {
+	if _, err := database.Db.Exec(articleStatements["Save"],
 		a.Title, a.ImageURL,
 		a.Text, a.AuthorID,
 		a.Date, a.EventID); err != nil {
 
-		return err
+		return &errors.InternalDatabaseError{Message: err.Error()}
 	}
 
 	return nil
 }
 
 // Delete an article
-func (a *Article) Delete() error {
+func (a *Article) Delete() errors.DatabaseError {
 	return DeleteArticleByID(a.ID)
 }
 
 // DeleteArticleByID - delete by id
-func DeleteArticleByID(id int) error {
-	result, err := database.Db.Exec(statements["DeleteArticleByID"], id)
+func DeleteArticleByID(id int) errors.DatabaseError {
+	result, err := database.Db.Exec(articleStatements["DeleteArticleByID"], id)
 	if err != nil {
-		return err
+		return &errors.InternalDatabaseError{Message: err.Error()}
 	}
 
 	rowsAffected, err := result.RowsAffected()
 	if err != nil {
-		return err
+		return &errors.InternalDatabaseError{Message: err.Error()}
 	}
 	if rowsAffected == 0 {
 		return &errors.IDNotFoundError{TableName: "articles", ID: id}

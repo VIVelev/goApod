@@ -13,65 +13,78 @@ type Author struct {
 	Name string `json:"name"`
 }
 
-// GetAuthors get all authors
-func GetAuthors() (*[]*Author, errors.DatabaseError) {
-	statement := `
+var authorStatements = map[string]string{
+	"GetAllAuthors": `
 		select id, name
-		from authors`
-	rows, err := database.Db.Query(statement)
+		from authors`,
+
+	"GetAuthorByID": `
+		select id, name
+		from authors
+		where id = $1`,
+
+	"Save": `
+		insert into authors (id, name)
+		values (default, $1)`,
+
+	"Update": `
+		update authors
+		set name = $1
+		where id = $2`,
+
+	"DeleteAuthorByID": `
+		delete from authors
+		where id = $1`,
+}
+
+// GetAllAuthors get all authors
+func GetAllAuthors() ([]Author, errors.DatabaseError) {
+	rows, err := database.Db.Query(authorStatements["GetAllAuthors"])
+	defer rows.Close()
+
 	if err != nil {
 		return nil, &errors.InternalDatabaseError{Message: err.Error()}
 	}
-	defer rows.Close()
 
-	var authors []*Author
+	var authors []Author
 	for rows.Next() {
 		var author Author
 		if err = rows.Scan(&author.ID, &author.Name); err != nil {
 			return nil, &errors.InternalDatabaseError{Message: err.Error()}
 		}
-		authors = append(authors, &author)
+		authors = append(authors, author)
 	}
 
-	return &authors, nil
+	return authors, nil
 }
 
-// GetAuthor get single author by id
-func GetAuthor(id int) (*Author, errors.DatabaseError) {
-	statement := `
-		select id, name
-		from authors
-		where id = $1`
-	row := database.Db.QueryRow(statement, id)
-	var author Author
-	switch err := row.Scan(&author.ID, &author.Name); err {
+// GetAuthorByID get single author by id
+func GetAuthorByID(id int) (Author, errors.DatabaseError) {
+	row := database.Db.QueryRow(authorStatements["GetAuthorByID"], id)
+	var ret Author
+
+	switch err := row.Scan(&ret.ID, &ret.Name); err {
 	case nil:
-		return &author, nil
+		return ret, nil
 	case sql.ErrNoRows:
-		return nil, &errors.IDNotFoundError{TableName: "authors", ID: id}
+		return ret, &errors.IDNotFoundError{TableName: "authors", ID: id}
 	default:
-		return nil, &errors.InternalDatabaseError{Message: err.Error()}
+		return ret, &errors.InternalDatabaseError{Message: err.Error()}
 	}
 }
 
 // Save insert new record
 func (a *Author) Save() errors.DatabaseError {
-	statement := `
-		insert into authors (id, name)
-		values (default, $1)`
-	if _, err := database.Db.Exec(statement, a.Name); err != nil {
+	if _, err := database.Db.Exec(authorStatements["Save"], a.Name); err != nil {
 		return &errors.InternalDatabaseError{Message: err.Error()}
 	}
+
 	return nil
 }
 
 // Update updates the author
 func (a *Author) Update() errors.DatabaseError {
-	statement := `
-		update authors
-		set name = $1
-		where id = $2`
-	result, err := database.Db.Exec(statement, a.Name, a.ID)
+	result, err := database.Db.Exec(authorStatements["Update"], a.Name, a.ID)
 	if err != nil {
 		return &errors.InternalDatabaseError{Message: err.Error()}
 	}
@@ -87,11 +100,13 @@ func (a *Author) Update() errors.DatabaseError {
 }
 
 // Delete author
-func (a *Author) Delete() errors.DatabaseError {
-	statement := `
-		delete from authors
-		where id = $1`
-	result, err := database.Db.Exec(statement, a.ID)
+func (a *Author) Delete() error {
+	return DeleteAuthorByID(a.ID)
+}
+
+// DeleteAuthorByID - delete author by id
+func DeleteAuthorByID(id int) errors.DatabaseError {
+	result, err := database.Db.Exec(authorStatements["DeleteAuthorByID"], id)
 	if err != nil {
 		return &errors.InternalDatabaseError{Message: err.Error()}
 	}
@@ -101,7 +116,7 @@ func (a *Author) Delete() errors.DatabaseError {
 		return &errors.InternalDatabaseError{Message: err.Error()}
 	}
 	if rowsAffected == 0 {
-		return &errors.IDNotFoundError{TableName: "authors", ID: a.ID}
+		return &errors.IDNotFoundError{TableName: "authors", ID: id}
 	}
 	return nil
 }

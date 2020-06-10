@@ -11,8 +11,8 @@ import (
 // ArticleController struct
 type ArticleController struct{}
 
-// GetAllArticles on GET /articles
-func (*ArticleController) GetAllArticles(c *gin.Context) {
+// GetAll on GET /articles
+func (ArticleController) GetAll(c *gin.Context) {
 	articles, err := models.GetAllArticles()
 
 	if err != nil {
@@ -26,8 +26,8 @@ func (*ArticleController) GetAllArticles(c *gin.Context) {
 	c.JSON(http.StatusOK, articles)
 }
 
-// GetArticleByID on GET /article/:id
-func (*ArticleController) GetArticleByID(c *gin.Context) {
+// GetByID on GET /articles/:id
+func (ArticleController) GetByID(c *gin.Context) {
 	id, err := strconv.Atoi(c.Param("id"))
 	if err != nil {
 		c.JSON(http.StatusUnprocessableEntity, gin.H{
@@ -49,8 +49,8 @@ func (*ArticleController) GetArticleByID(c *gin.Context) {
 	c.JSON(http.StatusOK, article)
 }
 
-// CreateArticle on POST /article
-func (*ArticleController) CreateArticle(c *gin.Context) {
+// Create on POST /articles
+func (ArticleController) Create(c *gin.Context) {
 	var article models.Article
 	if err := c.ShouldBindJSON(&article); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{
@@ -71,8 +71,8 @@ func (*ArticleController) CreateArticle(c *gin.Context) {
 	c.JSON(http.StatusCreated, article)
 }
 
-// DeleteArticleByID on DELETE /article/:id
-func (*ArticleController) DeleteArticleByID(c *gin.Context) {
+// DeleteByID on DELETE /articles/:id
+func (ArticleController) DeleteByID(c *gin.Context) {
 	id, err := strconv.Atoi(c.Param("id"))
 	if err != nil {
 		c.JSON(http.StatusUnprocessableEntity, gin.H{
