@@ -1,5 +1,5 @@
 <template>
-    <div id="app">
+    <div id="app" :style="$store.getters.isPopUpShown || 'overflow: hidden'">
         <router-view />
         <Nav />
 
@@ -31,6 +31,7 @@ export default {
     data() {
         return {}
     },
+    watch: {},
 }
 </script>
 
@@ -46,5 +47,20 @@ html {
 body {
     margin: 0;
     padding: 0;
+}
+
+/* width */
+::-webkit-scrollbar {
+    width: 3px;
+}
+
+/* Track */
+::-webkit-scrollbar-track {
+    background: #f1f1f1;
+}
+
+/* Handle */
+::-webkit-scrollbar-thumb {
+    background: #888;
 }
 </style>

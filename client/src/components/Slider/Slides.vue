@@ -112,30 +112,6 @@ button:hover {
     position: absolute;
     z-index: 1;
 }
-.more-info {
-    position: absolute;
-    font-size: 1rem;
-    color: rgba(255, 255, 255, 0.377);
-    bottom: 0.5rem;
-    left: 0.75rem;
-    padding: 0;
-    display: flex;
-}
-.more-info i {
-    font-size: 1.5rem;
-    color: rgba(255, 255, 255, 0.795);
-}
-
-.more-info i:hover {
-    color: white;
-}
-
-.more-info button {
-    border: none;
-    background-color: transparent;
-    transform: scale(1);
-    padding: 0;
-}
 p {
     margin: 0;
     margin-bottom: 0.4rem;

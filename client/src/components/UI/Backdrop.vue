@@ -1,13 +1,13 @@
 <template>
-    <div @click="$store.commit('modifyPopUp', false)"></div>
+    <div class="backdrop" @click="$store.commit('modifyPopUp', false)"></div>
 </template>
 
 <script>
 export default {}
 </script>
 
-<style scoped>
-div {
+<style>
+.backdrop {
     position: fixed;
     top: 0;
     left: 0;

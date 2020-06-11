@@ -78,6 +78,7 @@ func (ArticleController) GetAPOD(c *gin.Context) {
 		c.JSON(err.Code(), gin.H{
 			"message": err.Error(),
 		})
+		return
 	}
 
 	c.JSON(http.StatusOK, articles)

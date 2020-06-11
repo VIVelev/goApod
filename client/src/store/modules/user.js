@@ -8,6 +8,7 @@ const getters = {
 }
 const mutations = {
     changeUser(state, payload) {
+        console.log(payload)
         state.user = payload
     },
 }

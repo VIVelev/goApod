@@ -2,6 +2,7 @@ import Vue from 'vue'
 import VueRouter from 'vue-router'
 import Home from '../views/Home.vue'
 import Today from '../views/Today'
+import Posts from '../views/Posts'
 
 Vue.use(VueRouter)
 
@@ -15,6 +16,11 @@ const routes = [
         path: '/today',
         name: 'Today',
         component: Today,
+    },
+    {
+        path: '/posts',
+        name: 'Posts',
+        component: Posts,
     },
 ]
 

@@ -6,6 +6,11 @@
             </router-link>
             <div class="routes">
                 <li>
+                    <router-link to="/posts" tag="p">
+                        All Posts
+                    </router-link>
+                </li>
+                <li>
                     <router-link to="/today" tag="p">
                         Today's Picture
                     </router-link>
