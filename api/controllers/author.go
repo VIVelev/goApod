@@ -18,8 +18,10 @@ func (AuthorController) GetAll(c *gin.Context) {
 		c.JSON(err.Code(), gin.H{
 			"message": err.Error(),
 		})
+
 		return
 	}
+
 	c.JSON(http.StatusOK, authors)
 }
 
@@ -28,8 +30,9 @@ func (AuthorController) GetByID(c *gin.Context) {
 	id, err := strconv.Atoi(c.Param("id"))
 	if err != nil {
 		c.JSON(http.StatusUnprocessableEntity, gin.H{
-			"message": "Id not int",
+			"message": err.Error(),
 		})
+
 		return
 	}
 
@@ -38,18 +41,21 @@ func (AuthorController) GetByID(c *gin.Context) {
 		c.JSON(dbErr.Code(), gin.H{
 			"message": err.Error(),
 		})
+
 		return
 	}
+
 	c.JSON(http.StatusOK, author)
 }
 
-// GetAuthorByName on POST /auth
-func (AuthorController) GetAuthorByName(c *gin.Context) {
+// GetAuthorIDByName on POST /auth - used for authentication
+func (AuthorController) GetAuthorIDByName(c *gin.Context) {
 	var request models.Author
 	if err := c.ShouldBindJSON(&request); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{
-			"message": "Parsing error",
+			"message": err.Error(),
 		})
+
 		return
 	}
 
@@ -58,6 +64,7 @@ func (AuthorController) GetAuthorByName(c *gin.Context) {
 		c.JSON(dbErr.Code(), gin.H{
 			"message": dbErr.Error(),
 		})
+
 		return
 	}
 
@@ -69,8 +76,9 @@ func (AuthorController) Create(c *gin.Context) {
 	var author models.Author
 	if err := c.ShouldBindJSON(&author); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{
-			"message": "Parsing error",
+			"message": err.Error(),
 		})
+
 		return
 	}
 
@@ -78,11 +86,11 @@ func (AuthorController) Create(c *gin.Context) {
 		c.JSON(dbErr.Code(), gin.H{
 			"message": dbErr.Error(),
 		})
+
 		return
 	}
-	c.JSON(http.StatusCreated, gin.H{
-		"message": "Inserted new author",
-	})
+
+	c.JSON(http.StatusCreated, author)
 }
 
 // UpdateByID on PUT /authors/:id
@@ -90,31 +98,31 @@ func (AuthorController) UpdateByID(c *gin.Context) {
 	id, err := strconv.Atoi(c.Param("id"))
 	if err != nil {
 		c.JSON(http.StatusUnprocessableEntity, gin.H{
-			"message": "Id not int",
+			"message": err.Error(),
 		})
+
 		return
 	}
 
 	var author models.Author
 	if err := c.ShouldBindJSON(&author); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{
-			"message": "Parsing error",
+			"message": err.Error(),
 		})
+
 		return
 	}
 
 	author.ID = id
-
-	dbErr := author.Update()
-	if dbErr != nil {
+	if dbErr := author.Update(); dbErr != nil {
 		c.JSON(dbErr.Code(), gin.H{
 			"message": dbErr.Error(),
 		})
+
 		return
 	}
-	c.JSON(http.StatusOK, gin.H{
-		"message": "Author updated",
-	})
+
+	c.JSON(http.StatusNoContent, gin.H{})
 }
 
 // DeleteByID on DELETE /authors/:id
@@ -122,21 +130,19 @@ func (AuthorController) DeleteByID(c *gin.Context) {
 	id, err := strconv.Atoi(c.Param("id"))
 	if err != nil {
 		c.JSON(http.StatusUnprocessableEntity, gin.H{
-			"message": "Id not int",
+			"message": err.Error(),
 		})
+
 		return
 	}
 
-	author := models.Author{ID: id}
-
-	dbErr := author.Delete()
-	if err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{
+	if dbErr := models.DeleteArticleByID(id); dbErr != nil {
+		c.JSON(dbErr.Code(), gin.H{
 			"message": dbErr.Error(),
 		})
+
 		return
 	}
-	c.JSON(http.StatusOK, gin.H{
-		"message": "Author deleted",
-	})
+
+	c.JSON(http.StatusNoContent, gin.H{})
 }
