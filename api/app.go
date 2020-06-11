@@ -28,14 +28,17 @@ func main() {
 	})
 
 	authorController := controllers.AuthorController{}
+	likeController := controllers.LikeController{}
 	articleController := controllers.ArticleController{}
 
 	registerControllers(app, map[string]interface{}{
 		"/authors":  authorController,
 		"/articles": articleController,
+		"/likes":    likeController,
 	})
 
 	app.POST("/auth", authorController.GetAuthorIDByName)
+	app.DELETE("/likes/:authorId/:articleId", likeController.DeleteByAuthorAndArticle)
 	app.Run(":5000")
 }
 
