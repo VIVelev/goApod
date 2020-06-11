@@ -84,6 +84,10 @@ func GetAllArticles() ([]Article, errors.DatabaseError) {
 	defer rows.Close()
 
 	if err != nil {
+		if err == sql.ErrNoRows {
+			return []Article{}, nil
+		}
+
 		return nil, &errors.InternalDatabaseError{Message: err.Error()}
 	}
 

@@ -31,7 +31,8 @@ var authorStatements = map[string]string{
 
 	"Save": `
 		insert into authors
-		values (default, $1)`,
+		values (default, $1)
+		returning id`,
 
 	"Update": `
 		update authors
@@ -97,10 +98,12 @@ func GetAuthorByName(name string) (Author, errors.DatabaseError) {
 
 // Save insert new record
 func (a *Author) Save() errors.DatabaseError {
-	if _, err := database.Db.Exec(authorStatements["Save"], a.Name); err != nil {
+	id := 0
+	if err := database.Db.QueryRow(authorStatements["Save"], a.Name).Scan(&id); err != nil {
 		return &errors.InternalDatabaseError{Message: err.Error()}
 	}
 
+	a.ID = id
 	return nil
 }
 
