@@ -16,21 +16,21 @@ type Author struct {
 
 var authorStatements = map[string]string{
 	"GetAllAuthors": `
-		select id, name
+		select *
 		from authors`,
 
 	"GetAuthorByID": `
-		select id, name
+		select *
 		from authors
 		where id = $1`,
 
 	"GetAuthorByName": `
-		select id, name
+		select *
 		from authors
 		where name = $1`,
 
 	"Save": `
-		insert into authors (id, name)
+		insert into authors
 		values (default, $1)`,
 
 	"Update": `
@@ -58,6 +58,7 @@ func GetAllAuthors() ([]Author, errors.DatabaseError) {
 		if err = rows.Scan(&author.ID, &author.Name); err != nil {
 			return nil, &errors.InternalDatabaseError{Message: err.Error()}
 		}
+
 		authors = append(authors, author)
 	}
 
@@ -117,6 +118,7 @@ func (a *Author) Update() errors.DatabaseError {
 	if rowsAffected == 0 {
 		return &errors.IDNotFoundError{TableName: "authors", ID: a.ID}
 	}
+
 	return nil
 }
 
@@ -139,5 +141,6 @@ func DeleteAuthorByID(id int) errors.DatabaseError {
 	if rowsAffected == 0 {
 		return &errors.IDNotFoundError{TableName: "authors", ID: id}
 	}
+
 	return nil
 }
