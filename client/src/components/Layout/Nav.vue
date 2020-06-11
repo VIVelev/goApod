@@ -7,7 +7,7 @@
             <div class="routes">
                 <li>
                     <router-link to="/today" tag="p">
-                        Todays Picture
+                        Today's Picture
                     </router-link>
                 </li>
                 <li v-if="$store.getters.user">

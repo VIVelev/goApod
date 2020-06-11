@@ -41,7 +41,6 @@ func main() {
 
 func registerControllers(app *gin.Engine, pathControllerMap map[string]interface{}) {
 	for path, cont := range pathControllerMap {
-
 		// All Getters
 		if allGetter, ok := cont.(controllers.AllGetter); ok {
 			app.GET(path, allGetter.GetAll)

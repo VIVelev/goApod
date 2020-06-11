@@ -11,8 +11,8 @@ import (
 // AuthorController - manages authors
 type AuthorController struct{}
 
-// GetAuthors on GET /authors
-func (*AuthorController) GetAuthors(c *gin.Context) {
+// GetAll on GET /authors
+func (AuthorController) GetAll(c *gin.Context) {
 	authors, err := models.GetAllAuthors()
 	if err != nil {
 		c.JSON(err.Code(), gin.H{
@@ -23,8 +23,8 @@ func (*AuthorController) GetAuthors(c *gin.Context) {
 	c.JSON(http.StatusOK, authors)
 }
 
-// GetAuthor on GET /authors/:id
-func (*AuthorController) GetAuthor(c *gin.Context) {
+// GetByID on GET /authors/:id
+func (AuthorController) GetByID(c *gin.Context) {
 	id, err := strconv.Atoi(c.Param("id"))
 	if err != nil {
 		c.JSON(http.StatusUnprocessableEntity, gin.H{
@@ -44,7 +44,7 @@ func (*AuthorController) GetAuthor(c *gin.Context) {
 }
 
 // GetAuthorByName on POST /auth
-func (*AuthorController) GetAuthorByName(c *gin.Context) {
+func (AuthorController) GetAuthorByName(c *gin.Context) {
 	var request models.Author
 	if err := c.ShouldBindJSON(&request); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{
@@ -64,8 +64,8 @@ func (*AuthorController) GetAuthorByName(c *gin.Context) {
 	c.JSON(http.StatusOK, gin.H{"id": author.ID})
 }
 
-// CreateAuthor on POST /authors
-func (*AuthorController) CreateAuthor(c *gin.Context) {
+// Create on POST /authors
+func (AuthorController) Create(c *gin.Context) {
 	var author models.Author
 	if err := c.ShouldBindJSON(&author); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{
@@ -85,8 +85,8 @@ func (*AuthorController) CreateAuthor(c *gin.Context) {
 	})
 }
 
-// UpdateAuthor on PUT /authors/:id
-func (*AuthorController) UpdateAuthor(c *gin.Context) {
+// UpdateByID on PUT /authors/:id
+func (AuthorController) UpdateByID(c *gin.Context) {
 	id, err := strconv.Atoi(c.Param("id"))
 	if err != nil {
 		c.JSON(http.StatusUnprocessableEntity, gin.H{
@@ -117,8 +117,8 @@ func (*AuthorController) UpdateAuthor(c *gin.Context) {
 	})
 }
 
-// DeleteAuthor on DELETE /authors/:id
-func (*AuthorController) DeleteAuthor(c *gin.Context) {
+// DeleteByID on DELETE /authors/:id
+func (AuthorController) DeleteByID(c *gin.Context) {
 	id, err := strconv.Atoi(c.Param("id"))
 	if err != nil {
 		c.JSON(http.StatusUnprocessableEntity, gin.H{

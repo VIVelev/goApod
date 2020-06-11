@@ -4,6 +4,7 @@
             <h1>Sign in</h1>
             <input type="text" placeholder="Name" v-model="name" />
             <button type="submit">Sign in</button>
+            <!-- {{ names }} -->
         </form>
     </div>
 </template>
@@ -13,6 +14,7 @@ export default {
     data() {
         return {
             name: null,
+            names: null,
         }
     },
     methods: {
@@ -20,6 +22,12 @@ export default {
             this.$store.commit('changeUser', this.name)
             this.$store.commit('modifyPopUp', false)
         },
+    },
+    async created() {
+        const res = await fetch('http://localhost:5000/authors')
+        const json = await res.json()
+        console.log(json)
+        this.names = json
     },
 }
 </script>
