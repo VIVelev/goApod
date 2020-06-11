@@ -2,7 +2,7 @@ package models
 
 import (
 	"database/sql"
-	"time"
+	"net/http"
 
 	"github.com/VIVelev/goApod/database"
 	"github.com/VIVelev/goApod/errors"
@@ -10,13 +10,12 @@ import (
 
 // Article model
 type Article struct {
-	ID       int       `json:"id"`
-	Title    string    `json:"title"`
-	ImageURL string    `json:"imageUrl"`
-	Text     string    `json:"text"`
-	AuthorID int       `json:"authorId"`
-	Date     time.Time `json:"date"`
-	EventID  int       `json:"eventId"`
+	ID       int    `json:"id"`
+	Title    string `json:"title"`
+	ImageURL string `json:"imageUrl"`
+	Text     string `json:"text"`
+	AuthorID int    `json:"authorId"`
+	Date     string `json:"date"`
 
 	// Foreign
 	AuthorName string  `json:"authorName"`
@@ -46,6 +45,16 @@ var articleStatements = map[string]string{
 		left join likes l on art.id = l.article_id
 		group by art.id
 		where art.id = $1`,
+
+	"GetArticleByDate": `
+		select art.*, aut.name, eve.name, loc.lat, loc.long, count(l)
+		from articles art
+		left join authors aut on art.author_id = aut.id
+		left join events eve on art.id = eve.article_id
+		left join locations loc on eve.location_id = loc.id
+		left join likes l on art.id = l.article_id
+		group by art.id
+		where art.date = $1`,
 
 	"Save": `
 		insert into articles
@@ -77,9 +86,9 @@ func GetAllArticles() ([]Article, errors.DatabaseError) {
 			&article.ID, &article.Title,
 			&article.ImageURL, &article.Text,
 			&article.AuthorID, &article.Date,
-			&article.EventID, &article.AuthorName,
-			&article.EventName, &article.LocLat,
-			&article.LocLong, &article.LikesCount); err != nil {
+			&article.AuthorName, &article.EventName,
+			&article.LocLat, &article.LocLong,
+			&article.LikesCount); err != nil {
 
 			return nil, &errors.InternalDatabaseError{Message: err.Error()}
 		}
@@ -95,12 +104,13 @@ func GetArticleByID(id int) (Article, errors.DatabaseError) {
 	row := database.Db.QueryRow(articleStatements["GetArticleByID"], id)
 	var ret Article
 
-	switch err := row.Scan(&ret.ID, &ret.Title,
+	switch err := row.Scan(
+		&ret.ID, &ret.Title,
 		&ret.ImageURL, &ret.Text,
 		&ret.AuthorID, &ret.Date,
-		&ret.EventID, &ret.AuthorName,
-		&ret.EventName, &ret.LocLat,
-		&ret.LocLong, &ret.LikesCount); err {
+		&ret.AuthorName, &ret.EventName,
+		&ret.LocLat, &ret.LocLong,
+		&ret.LikesCount); err {
 
 	case nil:
 		return ret, nil
@@ -111,12 +121,34 @@ func GetArticleByID(id int) (Article, errors.DatabaseError) {
 	}
 }
 
+// GetArticleByDate - returns an article by date
+func GetArticleByDate(date string) (Article, errors.DatabaseError) {
+	row := database.Db.QueryRow(articleStatements["GetArticleByDate"], date)
+	var ret Article
+
+	switch err := row.Scan(
+		&ret.ID, &ret.Title,
+		&ret.ImageURL, &ret.Text,
+		&ret.AuthorID, &ret.Date,
+		&ret.AuthorName, &ret.EventName,
+		&ret.LocLat, &ret.LocLong,
+		&ret.LikesCount); err {
+
+	case nil:
+		return ret, nil
+	case sql.ErrNoRows:
+		return ret, &errors.GenericError{Message: "No article for the today ;(", HTTPCode: http.StatusNotFound}
+	default:
+		return ret, &errors.InternalDatabaseError{Message: err.Error()}
+	}
+}
+
 // Save (insert) a new article
 func (a *Article) Save() errors.DatabaseError {
 	if _, err := database.Db.Exec(articleStatements["Save"],
 		a.Title, a.ImageURL,
 		a.Text, a.AuthorID,
-		a.Date, a.EventID); err != nil {
+		a.Date); err != nil {
 
 		return &errors.InternalDatabaseError{Message: err.Error()}
 	}

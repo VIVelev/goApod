@@ -3,6 +3,7 @@ package controllers
 import (
 	"net/http"
 	"strconv"
+	"time"
 
 	"github.com/VIVelev/goApod/models"
 	"github.com/gin-gonic/gin"
@@ -47,6 +48,18 @@ func (ArticleController) GetByID(c *gin.Context) {
 	}
 
 	c.JSON(http.StatusOK, article)
+}
+
+// GetAPOD on GET /apod
+func (ArticleController) GetAPOD(c *gin.Context) {
+	articles, err := models.GetArticleByDate(time.Now().Format("01-02-2006"))
+	if err != nil {
+		c.JSON(err.Code(), gin.H{
+			"message": err.Error(),
+		})
+	}
+
+	c.JSON(http.StatusOK, articles)
 }
 
 // Create on POST /articles
