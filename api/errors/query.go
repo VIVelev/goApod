@@ -19,5 +19,5 @@ func (e *IDNotFoundError) Error() string {
 
 // Code - implements code
 func (e *IDNotFoundError) Code() int {
-	return http.StatusInternalServerError
+	return http.StatusNotFound
 }

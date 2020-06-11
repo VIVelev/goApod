@@ -41,7 +41,7 @@ func (ArticleController) GetByID(c *gin.Context) {
 	article, dbErr := models.GetArticleByID(id)
 	if dbErr != nil {
 		c.JSON(dbErr.Code(), gin.H{
-			"message": err.Error(),
+			"message": dbErr.Error(),
 		})
 
 		return
