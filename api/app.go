@@ -31,7 +31,7 @@ func main() {
 	likeController := controllers.LikeController{}
 	articleController := controllers.ArticleController{}
 
-	registerControllers(app, map[string]interface{}{
+	registerEntityControllers(app, map[string]interface{}{
 		"/authors":  authorController,
 		"/articles": articleController,
 		"/likes":    likeController,
@@ -39,10 +39,11 @@ func main() {
 
 	app.POST("/auth", authorController.GetAuthorIDByName)
 	app.DELETE("/likes/:authorId/:articleId", likeController.DeleteByAuthorAndArticle)
+	app.GET("/apod", articleController.GetAPOD)
 	app.Run(":5000")
 }
 
-func registerControllers(app *gin.Engine, pathControllerMap map[string]interface{}) {
+func registerEntityControllers(app *gin.Engine, pathControllerMap map[string]interface{}) {
 	for path, cont := range pathControllerMap {
 		// All Getters
 		if allGetter, ok := cont.(controllers.AllGetter); ok {
