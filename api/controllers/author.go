@@ -23,7 +23,7 @@ func (*AuthorController) GetAuthors(c *gin.Context) {
 	c.JSON(http.StatusOK, authors)
 }
 
-// GetAuthor on GET /author/:id
+// GetAuthor on GET /authors/:id
 func (*AuthorController) GetAuthor(c *gin.Context) {
 	id, err := strconv.Atoi(c.Param("id"))
 	if err != nil {
@@ -41,6 +41,27 @@ func (*AuthorController) GetAuthor(c *gin.Context) {
 		return
 	}
 	c.JSON(http.StatusOK, author)
+}
+
+// GetAuthorByName on POST /auth
+func (*AuthorController) GetAuthorByName(c *gin.Context) {
+	var request models.Author
+	if err := c.ShouldBindJSON(&request); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{
+			"message": "Parsing error",
+		})
+		return
+	}
+
+	author, dbErr := models.GetAuthorByName(request.Name)
+	if dbErr != nil {
+		c.JSON(dbErr.Code(), gin.H{
+			"message": dbErr.Error(),
+		})
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{"id": author.ID})
 }
 
 // CreateAuthor on POST /authors
