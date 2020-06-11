@@ -34,14 +34,14 @@ func main() {
 	})
 
 	authorController := controllers.AuthorController{}
+	articleController := controllers.ArticleController{}
 
-	pathControllerMap := map[string]interface{}{
+	registerControllers(app, map[string]interface{}{
 		"/authors":  authorController,
-		"/articles": controllers.ArticleController{},
-	}
+		"/articles": articleController,
+	})
 
-	registerControllers(app, pathControllerMap)
-	app.POST("/auth", authorController.GetAuthorByName)
+	app.POST("/auth", authorController.GetAuthorIDByName)
 	app.Run(":5000")
 }
 

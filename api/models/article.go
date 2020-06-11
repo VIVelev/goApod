@@ -37,8 +37,8 @@ var articleStatements = map[string]string{
 		group by a.id`,
 
 	"Save": `
-		insert into articles values
-		(default, $1, $2, $3, $4, $5, $6)`,
+		insert into articles
+		values (default, $1, $2, $3, $4, $5, $6)`,
 
 	"DeleteArticleByID": `
 		delete from articles

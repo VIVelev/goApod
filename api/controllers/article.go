@@ -37,9 +37,9 @@ func (ArticleController) GetByID(c *gin.Context) {
 		return
 	}
 
-	article, customErr := models.GetArticleByID(id)
-	if customErr != nil {
-		c.JSON(customErr.Code(), gin.H{
+	article, dbErr := models.GetArticleByID(id)
+	if dbErr != nil {
+		c.JSON(dbErr.Code(), gin.H{
 			"message": err.Error(),
 		})
 
@@ -60,9 +60,9 @@ func (ArticleController) Create(c *gin.Context) {
 		return
 	}
 
-	if customErr := article.Save(); customErr != nil {
-		c.JSON(customErr.Code(), gin.H{
-			"message": customErr.Error(),
+	if dbErr := article.Save(); dbErr != nil {
+		c.JSON(dbErr.Code(), gin.H{
+			"message": dbErr.Error(),
 		})
 
 		return
@@ -82,8 +82,8 @@ func (ArticleController) DeleteByID(c *gin.Context) {
 		return
 	}
 
-	if customErr := models.DeleteArticleByID(id); err != nil {
-		c.JSON(customErr.Code(), gin.H{
+	if dbErr := models.DeleteArticleByID(id); err != nil {
+		c.JSON(dbErr.Code(), gin.H{
 			"message": err.Error(),
 		})
 
