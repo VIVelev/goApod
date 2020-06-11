@@ -10,13 +10,14 @@ import (
 
 // Article model
 type Article struct {
-	ID       int       `json:"id"`
-	Title    string    `json:"title"`
-	ImageURL string    `json:"imageUrl"`
-	Text     string    `json:"text"`
-	AuthorID int       `json:"authorId"`
-	Date     time.Time `json:"date"`
-	EventID  int       `json:"eventId"`
+	ID         int       `json:"id"`
+	Title      string    `json:"title"`
+	ImageURL   string    `json:"imageUrl"`
+	Text       string    `json:"text"`
+	AuthorID   int       `json:"authorId"`
+	Date       time.Time `json:"date"`
+	EventID    int       `json:"eventId"`
+	LikesCount int       `json:"likesCount"`
 }
 
 // SQL statements
@@ -25,8 +26,11 @@ var articleStatements = map[string]string{
 		select * from articles`,
 
 	"GetArticleByID": `
-		select * from articles
-		where id = $1`,
+		select a.*, count(l)
+		from articles a
+		left join likes l on a.id = l.article_id
+		where a.id = $1
+		group by a.id`,
 
 	"Save": `
 		insert into articles values
@@ -35,6 +39,11 @@ var articleStatements = map[string]string{
 	"DeleteArticleByID": `
 		delete from articles
 		where id = $1`,
+
+	"CountLikesByID": `
+		select count(*)
+		from likes
+		where article_id = $1`,
 }
 
 // GetAllArticles - returns all articles
@@ -53,7 +62,7 @@ func GetAllArticles() ([]Article, errors.DatabaseError) {
 			&article.ID, &article.Title,
 			&article.ImageURL, &article.Text,
 			&article.AuthorID, &article.Date,
-			&article.EventID); err != nil {
+			&article.EventID, &article.LikesCount); err != nil {
 
 			return nil, &errors.InternalDatabaseError{Message: err.Error()}
 		}
