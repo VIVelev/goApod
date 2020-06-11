@@ -79,7 +79,7 @@ func GetAllArticles() ([]Article, errors.DatabaseError) {
 
 // GetArticleByID - get single article by id
 func GetArticleByID(id int) (Article, errors.DatabaseError) {
-	row := database.Db.QueryRow(articleStatements["GetArticleByID"])
+	row := database.Db.QueryRow(articleStatements["GetArticleByID"], id)
 	var ret Article
 
 	switch err := row.Scan(&ret.ID, &ret.Title, &ret.ImageURL,
