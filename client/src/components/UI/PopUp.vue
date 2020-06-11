@@ -4,7 +4,7 @@
             <h1>Sign in</h1>
             <input type="text" placeholder="Name" v-model="name" />
             <button type="submit">Sign in</button>
-            <!-- {{ names }} -->
+            <p v-for="user in users" :key="user.id">{{ user.name }}</p>
         </form>
     </div>
 </template>
@@ -14,20 +14,28 @@ export default {
     data() {
         return {
             name: null,
-            names: null,
+            users: null,
         }
     },
     methods: {
-        signIn() {
-            this.$store.commit('changeUser', this.name)
-            this.$store.commit('modifyPopUp', false)
+        async signIn() {
+            // this.$store.commit('changeUser', this.name)
+            // this.$store.commit('modifyPopUp', false)
+            const res = await fetch(`${process.env.VUE_APP_API_URL}/authors`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ name: this.name }),
+            })
+            const json = await res.json()
+            console.log(json)
         },
     },
     async created() {
-        const res = await fetch('http://localhost:5000/authors')
+        const res = await fetch(`${process.env.VUE_APP_API_URL}/authors`)
         const json = await res.json()
-        console.log(json)
-        this.names = json
+        this.users = json
     },
 }
 </script>

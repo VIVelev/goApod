@@ -1,6 +1,8 @@
 package main
 
 import (
+	"net/http"
+
 	"github.com/VIVelev/goApod/controllers"
 	"github.com/VIVelev/goApod/database"
 	"github.com/gin-gonic/gin"
@@ -24,7 +26,11 @@ func main() {
 		c.Header("Access-Control-Allow-Methods",
 			"OPTIONS, GET, POST, PUT, PATCH, DELETE")
 		c.Header("Access-Control-Allow-Headers", "Content-Type, Authorization")
-		c.Next()
+		if c.Request.Method == "OPTIONS" {
+			c.AbortWithStatus(http.StatusOK)
+		} else {
+			c.Next()
+		}
 	})
 
 	authorController := controllers.AuthorController{}
