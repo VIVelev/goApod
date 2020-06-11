@@ -57,6 +57,7 @@ func Prepare() error {
 
 		`create table if not exists events (
 			id serial primary key,
+			name varchar not null,
 			date date not null,
 			location_id int references locations(id),
 			article_id int references articles(id)

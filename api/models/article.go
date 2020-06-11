@@ -34,7 +34,7 @@ var articleStatements = map[string]string{
 		left join events eve on art.id = eve.article_id
 		left join locations loc on eve.location_id = loc.id
 		left join likes l on art.id = l.article_id
-		group by art.id`,
+		group by art.id, aut.name, eve.name, loc.lat, loc.long`,
 
 	"GetArticleByID": `
 		select art.*, aut.name, eve.name, loc.lat, loc.long, count(l)
@@ -43,8 +43,8 @@ var articleStatements = map[string]string{
 		left join events eve on art.id = eve.article_id
 		left join locations loc on eve.location_id = loc.id
 		left join likes l on art.id = l.article_id
-		group by art.id
-		where art.id = $1`,
+		where art.id = $1
+		group by art.id, aut.name, eve.name, loc.lat, loc.long`,
 
 	"GetArticleByDate": `
 		select art.*, aut.name, eve.name, loc.lat, loc.long, count(l)
@@ -53,8 +53,8 @@ var articleStatements = map[string]string{
 		left join events eve on art.id = eve.article_id
 		left join locations loc on eve.location_id = loc.id
 		left join likes l on art.id = l.article_id
-		group by art.id
-		where art.date = $1`,
+		where art.date = $1
+		group by art.id, aut.name, eve.name, loc.lat, loc.long`,
 
 	"Save": `
 		insert into articles
@@ -141,7 +141,7 @@ func GetArticleByDate(date string) (Article, errors.DatabaseError) {
 	case nil:
 		return ret, nil
 	case sql.ErrNoRows:
-		return ret, &errors.GenericError{Message: "No article for the today ;(", HTTPCode: http.StatusNotFound}
+		return ret, &errors.GenericError{Message: "No article for today ;(", HTTPCode: http.StatusNotFound}
 	default:
 		return ret, &errors.InternalDatabaseError{Message: err.Error()}
 	}

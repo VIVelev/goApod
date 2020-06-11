@@ -41,7 +41,7 @@ func (ArticleController) GetByID(c *gin.Context) {
 	article, dbErr := models.GetArticleByID(id)
 	if dbErr != nil {
 		c.JSON(dbErr.Code(), gin.H{
-			"message": err.Error(),
+			"message": dbErr.Error(),
 		})
 
 		return
@@ -57,6 +57,8 @@ func (ArticleController) GetAPOD(c *gin.Context) {
 		c.JSON(err.Code(), gin.H{
 			"message": err.Error(),
 		})
+
+		return
 	}
 
 	c.JSON(http.StatusOK, articles)
