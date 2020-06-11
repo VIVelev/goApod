@@ -44,6 +44,7 @@ func main() {
 	app.POST("/auth", authorController.GetAuthorIDByName)
 	app.DELETE("/likes/:authorId/:articleId", likeController.DeleteByAuthorAndArticle)
 	app.GET("/apod", articleController.GetAPOD)
+	app.GET("/top-articles", articleController.GetTopArticles)
 	app.Run(":5000")
 }
 

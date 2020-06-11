@@ -50,6 +50,27 @@ func (ArticleController) GetByID(c *gin.Context) {
 	c.JSON(http.StatusOK, article)
 }
 
+// GetTopArticles - GET on /top-articles?limit=
+func (ArticleController) GetTopArticles(c *gin.Context) {
+	limit, err := strconv.Atoi(c.Query("limit"))
+	if err != nil {
+		c.JSON(http.StatusUnprocessableEntity, gin.H{
+			"message": err.Error(),
+		})
+		return
+	}
+
+	articles, dbErr := models.GetTopArticles(limit)
+	if dbErr != nil {
+		c.JSON(dbErr.Code(), gin.H{
+			"message": dbErr.Error(),
+		})
+		return
+	}
+
+	c.JSON(http.StatusOK, articles)
+}
+
 // GetAPOD on GET /apod
 func (ArticleController) GetAPOD(c *gin.Context) {
 	articles, err := models.GetArticleByDate(time.Now().Format("01-02-2006"))
