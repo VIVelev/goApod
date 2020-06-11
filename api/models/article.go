@@ -46,6 +46,14 @@ var articleStatements = map[string]string{
 		where art.id = $1
 		group by art.id, aut.name, eve.name, loc.lat, loc.long`,
 
+	"GetTopArticles": `
+		select a.*
+		from articles a
+		left join likes l on a.id = l.article_id
+		group by a.id
+		order by count(l) desc
+		limit $1`,
+
 	"GetArticleByDate": `
 		select art.*, aut.name, eve.name, loc.lat, loc.long, count(l)
 		from articles art
@@ -145,6 +153,35 @@ func GetArticleByDate(date string) (Article, errors.DatabaseError) {
 	default:
 		return ret, &errors.InternalDatabaseError{Message: err.Error()}
 	}
+}
+
+// GetTopArticles - get top articles
+func GetTopArticles(limit int) ([]Article, errors.DatabaseError) {
+	rows, err := database.Db.Query(articleStatements["GetTopArticles"], limit)
+	defer rows.Close()
+
+	if err != nil {
+		return nil, &errors.InternalDatabaseError{Message: err.Error()}
+	}
+
+	var articles []Article
+	for rows.Next() {
+		var article Article
+		if err := rows.Scan(
+			&article.ID, &article.Title,
+			&article.ImageURL, &article.Text,
+			&article.AuthorID, &article.Date,
+			&article.AuthorName, &article.EventName,
+			&article.LocLat, &article.LocLong,
+			&article.LikesCount); err != nil {
+
+			return nil, &errors.InternalDatabaseError{Message: err.Error()}
+		}
+
+		articles = append(articles, article)
+	}
+
+	return articles, nil
 }
 
 // Save (insert) a new article
