@@ -10,20 +10,24 @@ import (
 
 // Article model
 type Article struct {
-	ID         int       `json:"id"`
-	Title      string    `json:"title"`
-	ImageURL   string    `json:"imageUrl"`
-	Text       string    `json:"text"`
-	AuthorID   int       `json:"authorId"`
-	Date       time.Time `json:"date"`
-	EventID    int       `json:"eventId"`
-	LikesCount int       `json:"likesCount"`
+	ID       int       `json:"id"`
+	Title    string    `json:"title"`
+	ImageURL string    `json:"imageUrl"`
+	Text     string    `json:"text"`
+	AuthorID int       `json:"authorId"`
+	Date     time.Time `json:"date"`
+	EventID  int       `json:"eventId"`
+
+	LikesCount int `json:"likesCount"`
 }
 
 // SQL statements
 var articleStatements = map[string]string{
 	"GetAllArticles": `
-		select * from articles`,
+		select a.*, count(l)
+		from articles a
+		left join likes l on a.id = l.article_id
+		group by a.id`,
 
 	"GetArticleByID": `
 		select a.*, count(l)
@@ -79,7 +83,7 @@ func GetArticleByID(id int) (Article, errors.DatabaseError) {
 	var ret Article
 
 	switch err := row.Scan(&ret.ID, &ret.Title, &ret.ImageURL,
-		&ret.Text, &ret.AuthorID, &ret.Date, &ret.EventID); err {
+		&ret.Text, &ret.AuthorID, &ret.Date, &ret.EventID, &ret.LikesCount); err {
 
 	case nil:
 		return ret, nil

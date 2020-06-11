@@ -16,7 +16,7 @@ func (ArticleController) GetAll(c *gin.Context) {
 	articles, err := models.GetAllArticles()
 
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{
+		c.JSON(err.Code(), gin.H{
 			"message": err.Error(),
 		})
 
@@ -37,9 +37,9 @@ func (ArticleController) GetByID(c *gin.Context) {
 		return
 	}
 
-	article, err := models.GetArticleByID(id)
-	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{
+	article, customErr := models.GetArticleByID(id)
+	if customErr != nil {
+		c.JSON(customErr.Code(), gin.H{
 			"message": err.Error(),
 		})
 
@@ -60,9 +60,9 @@ func (ArticleController) Create(c *gin.Context) {
 		return
 	}
 
-	if err := article.Save(); err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{
-			"message": err.Error(),
+	if customErr := article.Save(); customErr != nil {
+		c.JSON(customErr.Code(), gin.H{
+			"message": customErr.Error(),
 		})
 
 		return
@@ -82,8 +82,8 @@ func (ArticleController) DeleteByID(c *gin.Context) {
 		return
 	}
 
-	if err := models.DeleteArticleByID(id); err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{
+	if customErr := models.DeleteArticleByID(id); err != nil {
+		c.JSON(customErr.Code(), gin.H{
 			"message": err.Error(),
 		})
 
