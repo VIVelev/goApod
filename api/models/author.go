@@ -2,6 +2,7 @@ package models
 
 import (
 	"database/sql"
+	"net/http"
 
 	"github.com/VIVelev/goApod/database"
 	"github.com/VIVelev/goApod/errors"
@@ -22,6 +23,11 @@ var authorStatements = map[string]string{
 		select id, name
 		from authors
 		where id = $1`,
+
+	"GetAuthorByName": `
+		select id, name
+		from authors
+		where name = $1`,
 
 	"Save": `
 		insert into authors (id, name)
@@ -68,6 +74,21 @@ func GetAuthorByID(id int) (Author, errors.DatabaseError) {
 		return ret, nil
 	case sql.ErrNoRows:
 		return ret, &errors.IDNotFoundError{TableName: "authors", ID: id}
+	default:
+		return ret, &errors.InternalDatabaseError{Message: err.Error()}
+	}
+}
+
+// GetAuthorByName - get author by name
+func GetAuthorByName(name string) (Author, errors.DatabaseError) {
+	row := database.Db.QueryRow(authorStatements["GetAuthorByName"], name)
+	var ret Author
+
+	switch err := row.Scan(&ret.ID, &ret.Name); err {
+	case nil:
+		return ret, nil
+	case sql.ErrNoRows:
+		return ret, &errors.GenericError{HTTPCode: http.StatusNotFound, Message: "Invalid name"}
 	default:
 		return ret, &errors.InternalDatabaseError{Message: err.Error()}
 	}
