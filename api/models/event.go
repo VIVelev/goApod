@@ -8,9 +8,10 @@ import (
 	"github.com/VIVelev/goApod/errors"
 )
 
-//Event struct
+// Event struct
 type Event struct {
 	ID         int       `json:"id"`
+	Name       string    `json:"name"`
 	Date       time.Time `json:"date"`
 	LocationID int       `json:"locationId"`
 	ArticleID  int       `json:"articleId"`
@@ -18,38 +19,39 @@ type Event struct {
 
 var eventStatements = map[string]string{
 	"GetEventByID": `
-		SELECT * FROM events
-		WHERE id = $1`,
+		select *
+		from events
+		where id = $1`,
+
 	"Save": `
-		INSERT INTO events (date, location_id, article_id)
-		VALUES ($1, $2, $3)`,
+		insert into events
+		values (default, $1, $2, $3, $4)`,
 }
 
-//GetEventByID gives you the event which maches the provided ID
-func GetEventByID(ID int) (*Event, error) {
-	var event Event
-	row := database.Db.QueryRow(eventStatements["GetEventByID"], ID)
+// GetEventByID gives you the event which maches the provided ID
+func GetEventByID(id int) (Event, errors.DatabaseError) {
+	row := database.Db.QueryRow(eventStatements["GetEventByID"], id)
+	var ret Event
 
-	switch err := row.Scan(&event.ID, &event.Date,
-		&event.LocationID, &event.ArticleID); err {
+	switch err := row.Scan(&ret.ID, &ret.Name, &ret.Date,
+		&ret.LocationID, &ret.ArticleID); err {
 
 	case nil:
-		return &event, nil
+		return ret, nil
 	case sql.ErrNoRows:
-		return nil, &errors.IDNotFoundError{TableName: "events", ID: ID}
+		return ret, &errors.IDNotFoundError{TableName: "events", ID: id}
 	default:
-		return nil, err
+		return ret, &errors.InternalDatabaseError{Message: err.Error()}
 	}
 }
 
 //Save saves the event
-func (e *Event) Save() error {
-	row := database.Db.QueryRow(
-		eventStatements["Save"], e.Date, e.LocationID, e.ArticleID)
+func (e *Event) Save() errors.DatabaseError {
+	if _, err := database.Db.Exec(eventStatements["Save"],
+		e.Name, e.Date, e.LocationID, e.ArticleID); err != nil {
 
-	err := row.Scan(&e.ID, &e.Date, &e.LocationID, &e.ArticleID)
-	if err != nil {
-		return err
+		return &errors.InternalDatabaseError{Message: err.Error()}
 	}
+
 	return nil
 }

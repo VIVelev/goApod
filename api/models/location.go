@@ -7,7 +7,7 @@ import (
 	"github.com/VIVelev/goApod/errors"
 )
 
-//Location model
+// Location struct
 type Location struct {
 	ID   int     `json:"id"`
 	Lat  float64 `json:"lat"`
@@ -16,48 +16,57 @@ type Location struct {
 
 var locationStatements = map[string]string{
 	"GetLocationByID": `
-		SELECT * FROM locations
-		WHERE id = $1`,
+		select *
+		from locations
+		where id = $1`,
+
 	"Save": `
-		INSERT INTO locations (lat, long)
-		VALUES ($1, $2)`,
+		insert into locations
+		values (default, $1, $2)`,
+
 	"DeleteLocationByID": `
-		DELETE FROM locations
-		WHERE id = $1`,
+		delete from locations
+		where id = $1`,
 }
 
-//GetLocationByID gives the Location object which matches the provided ID
-func GetLocationByID(ID int) (*Location, error) {
-	var location Location
-	row := database.Db.QueryRow(locationStatements["GetLocationByID"], ID)
-	err := row.Scan(&location.ID, &location.Lat, &location.Long)
-	if err != nil {
-		return nil, err
-	} else if err == sql.ErrNoRows {
-		return nil, nil
-	} else {
-		return &location, nil
+// GetLocationByID gives the Location object which matches the provided id
+func GetLocationByID(id int) (Location, errors.DatabaseError) {
+	row := database.Db.QueryRow(locationStatements["GetLocationByID"], id)
+	var ret Location
+
+	switch err := row.Scan(&ret.ID, &ret.Lat, &ret.Long); err {
+	case nil:
+		return ret, nil
+	case sql.ErrNoRows:
+		return ret, &errors.IDNotFoundError{TableName: "locations", ID: id}
+	default:
+		return ret, &errors.InternalDatabaseError{Message: err.Error()}
 	}
 }
 
-//Save - saves the Location object on which you call this method
-func (l *Location) Save() error {
-	row := database.Db.QueryRow(locationStatements["Save"], l.Lat, l.Long)
-	err := row.Scan(&l.ID, &l.Lat, &l.Long)
-	if err != nil {
-		return err
+// Save - saves the Location object on which you call this method
+func (l *Location) Save() errors.DatabaseError {
+	if _, err := database.Db.Exec(locationStatements["Save"], l.Lat, l.Long); err != nil {
+		return &errors.InternalDatabaseError{Message: err.Error()}
 	}
+
 	return nil
 }
 
-//DeleteLocationByID deletes the location with id that matches the provided ID
-func DeleteLocationByID(ID int) error {
-	res, err := database.Db.Exec(locationStatements["DeleteLocationByID"], ID)
+// DeleteLocationByID deletes the location with id that matches the provided id
+func DeleteLocationByID(id int) error {
+	result, err := database.Db.Exec(locationStatements["DeleteLocationByID"], id)
 	if err != nil {
-		return err
+		return &errors.InternalDatabaseError{Message: err.Error()}
 	}
-	if _, err := res.RowsAffected(); err != nil {
-		return &errors.IDNotFoundError{TableName: "Locations", ID: ID}
+
+	rowsAffected, err := result.RowsAffected()
+	if err != nil {
+		return &errors.InternalDatabaseError{Message: err.Error()}
 	}
+	if rowsAffected == 0 {
+		return &errors.IDNotFoundError{TableName: "locations", ID: id}
+	}
+
 	return nil
 }

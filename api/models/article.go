@@ -18,23 +18,34 @@ type Article struct {
 	Date     time.Time `json:"date"`
 	EventID  int       `json:"eventId"`
 
-	LikesCount int `json:"likesCount"`
+	// Foreign
+	AuthorName string  `json:"authorName"`
+	EventName  string  `json:"eventName"`
+	LocLat     float64 `json:"locLat"`
+	LocLong    float64 `json:"locLong"`
+	LikesCount int     `json:"likesCount"`
 }
 
 // SQL statements
 var articleStatements = map[string]string{
 	"GetAllArticles": `
-		select a.*, count(l)
-		from articles a
-		left join likes l on a.id = l.article_id
-		group by a.id`,
+		select art.*, aut.name, eve.name, loc.lat, loc.long, count(l)
+		from articles art
+		left join authors aut on art.author_id = aut.id
+		left join events eve on art.id = eve.article_id
+		left join locations loc on eve.location_id = loc.id
+		left join likes l on art.id = l.article_id
+		group by art.id`,
 
 	"GetArticleByID": `
-		select a.*, count(l)
-		from articles a
-		left join likes l on a.id = l.article_id
-		where a.id = $1
-		group by a.id`,
+		select art.*, aut.name, eve.name, loc.lat, loc.long, count(l)
+		from articles art
+		left join authors aut on art.author_id = aut.id
+		left join events eve on art.id = eve.article_id
+		left join locations loc on eve.location_id = loc.id
+		left join likes l on art.id = l.article_id
+		group by art.id
+		where art.id = $1`,
 
 	"Save": `
 		insert into articles
@@ -66,7 +77,9 @@ func GetAllArticles() ([]Article, errors.DatabaseError) {
 			&article.ID, &article.Title,
 			&article.ImageURL, &article.Text,
 			&article.AuthorID, &article.Date,
-			&article.EventID, &article.LikesCount); err != nil {
+			&article.EventID, &article.AuthorName,
+			&article.EventName, &article.LocLat,
+			&article.LocLong, &article.LikesCount); err != nil {
 
 			return nil, &errors.InternalDatabaseError{Message: err.Error()}
 		}
@@ -79,11 +92,15 @@ func GetAllArticles() ([]Article, errors.DatabaseError) {
 
 // GetArticleByID - get single article by id
 func GetArticleByID(id int) (Article, errors.DatabaseError) {
-	row := database.Db.QueryRow(articleStatements["GetArticleByID"])
+	row := database.Db.QueryRow(articleStatements["GetArticleByID"], id)
 	var ret Article
 
-	switch err := row.Scan(&ret.ID, &ret.Title, &ret.ImageURL,
-		&ret.Text, &ret.AuthorID, &ret.Date, &ret.EventID, &ret.LikesCount); err {
+	switch err := row.Scan(&ret.ID, &ret.Title,
+		&ret.ImageURL, &ret.Text,
+		&ret.AuthorID, &ret.Date,
+		&ret.EventID, &ret.AuthorName,
+		&ret.EventName, &ret.LocLat,
+		&ret.LocLong, &ret.LikesCount); err {
 
 	case nil:
 		return ret, nil
