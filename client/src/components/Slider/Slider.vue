@@ -1,5 +1,5 @@
 <template>
-    <transition-group mode="out-in" tag="div" class="container">
+    <transition-group tag="div" class="container">
         <Slides
             v-for="(img, index) of $store.getters.images"
             :key="index"

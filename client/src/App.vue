@@ -2,10 +2,19 @@
     <div id="app">
         <router-view />
         <Nav />
-        <template v-if="$store.getters.isPopUpShown">
-            <Backdrop />
-            <PopUp />
-        </template>
+
+        <transition
+            enter-active-class="animated slideInUp"
+            leave-active-class="animated slideOutDown"
+        >
+            <Backdrop v-if="$store.getters.isPopUpShown" />
+        </transition>
+        <transition
+            enter-active-class="animated fadeInDownBig"
+            leave-active-class="animated fadeOutUpBig"
+        >
+            <PopUp v-if="$store.getters.isPopUpShown" />
+        </transition>
     </div>
 </template>
 

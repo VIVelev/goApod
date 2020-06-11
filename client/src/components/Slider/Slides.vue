@@ -3,11 +3,7 @@
         v-show="index === $store.getters.activeElement || side"
         :class="side ? 'side' : 'center'"
     >
-        <img
-            :src="img"
-            alt="picture"
-            @click="$router.push({ path: '/today' })"
-        />
+        <img :src="img" alt="picture" @click="openPost(index)" />
         <!-- should go to the article -->
         <template v-if="index === $store.getters.activeElement">
             <button @click="$store.commit('prev')" class="arrow">
@@ -49,6 +45,11 @@ export default {
                 this.$store.commit('modifyPopUp', true)
             }
         },
+        openPost(index) {
+            if (index === this.$store.getters.activeElement) {
+                this.$router.push('/today')
+            }
+        },
     },
 }
 </script>
@@ -84,6 +85,9 @@ img {
     transition: 0.3s;
     bottom: 0.75rem;
     right: 0.75rem;
+}
+button {
+    cursor: pointer;
 }
 .fill {
     color: tomato;

@@ -1,9 +1,9 @@
 <template>
     <div>
-        <form>
+        <form @submit.prevent="signIn">
             <h1>Sign in</h1>
             <input type="text" placeholder="Name" v-model="name" />
-            <button @click="signIn">Sign in</button>
+            <button type="submit">Sign in</button>
         </form>
     </div>
 </template>
@@ -27,14 +27,15 @@ export default {
 <style scoped>
 div {
     position: fixed;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
+    top: 35%;
+    left: 0;
+    right: 0;
     width: 90%;
     background: white;
     border-radius: 4px;
     max-width: 500px;
     z-index: 3;
+    margin: auto;
 }
 form {
     display: flex;
