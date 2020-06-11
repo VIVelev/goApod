@@ -17,6 +17,10 @@ func main() {
 	}
 	defer database.Db.Close()
 
+	if err := database.Prepare(); err != nil {
+		panic(err)
+	}
+
 	app := gin.Default()
 
 	app.Use(func(c *gin.Context) {

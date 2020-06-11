@@ -31,3 +31,49 @@ func Connect() error {
 	Db = db
 	return nil
 }
+
+// Prepare database
+func Prepare() error {
+	queries := []string{
+		`create table if not exists authors (
+			id serial primary key,
+			name varchar not null
+		)`,
+
+		`create table if not exists locations (
+			id serial primary key,
+			lat double precision not null,
+			long double precision not null
+		)`,
+
+		`create table if not exists articles (
+			id serial primary key,
+			title varchar not null,
+			image_path varchar not null,
+			text text not null,
+			author_id int references authors(id) not null,
+			date date not null
+		)`,
+
+		`create table if not exists events (
+			id serial primary key,
+			date date not null,
+			location_id int references locations(id),
+			article_id int references articles(id)
+		)`,
+
+		`create table if not exists likes (
+			id serial primary key,
+			author_id int references authors(id) not null,
+			article_id int references articles(id) not null
+		)`,
+	}
+
+	for _, q := range queries {
+		if _, err := Db.Exec(q); err != nil {
+			return err
+		}
+	}
+
+	return nil
+}
