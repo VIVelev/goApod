@@ -9,9 +9,9 @@ import (
 
 // Location struct
 type Location struct {
-	ID   int     `json:"id"`
-	Lat  float64 `json:"lat"`
-	Long float64 `json:"long"`
+	ID   int     `json:"id,string"`
+	Lat  float64 `json:"lat,string"`
+	Long float64 `json:"long,string"`
 }
 
 var locationStatements = map[string]string{
