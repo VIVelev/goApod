@@ -22,7 +22,8 @@ var locationStatements = map[string]string{
 
 	"Save": `
 		insert into locations
-		values (default, $1, $2)`,
+		values (default, $1, $2)
+		returning id`,
 
 	"DeleteLocationByID": `
 		delete from locations

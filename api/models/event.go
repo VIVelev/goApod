@@ -23,7 +23,8 @@ var eventStatements = map[string]string{
 
 	"Save": `
 		insert into events
-		values (default, $1, $2, $3)`,
+		values (default, $1, $2, $3)
+		returning id`,
 }
 
 // GetEventByID gives you the event which maches the provided ID
