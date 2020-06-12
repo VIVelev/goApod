@@ -99,9 +99,9 @@ func GetAllArticles() ([]Article, errors.DatabaseError) {
 			&article.ID, &article.Title,
 			&article.ImageURL, &article.Text,
 			&article.AuthorID, &article.Date,
-			&article.AuthorName, &article.EventName,
-			&article.LocLat, &article.LocLong,
-			&article.LikesCount); err != nil {
+			&article.EventID, &article.AuthorName,
+			&article.EventName, &article.LocLat,
+			&article.LocLong, &article.LikesCount); err != nil {
 
 			return nil, &errors.InternalDatabaseError{Message: err.Error()}
 		}
