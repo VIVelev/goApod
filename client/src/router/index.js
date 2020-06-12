@@ -3,8 +3,9 @@ import VueRouter from 'vue-router'
 import Home from '../views/Home.vue'
 import Today from '../views/Today'
 import Posts from '../views/Posts'
-import Article from '../components/Article/Article'
+import ArticlePage from '../views/ArticlePage'
 import ArticlesList from '../components/Article/ArticlesList'
+import CreateArticle from '../views/CreateArticle'
 
 Vue.use(VueRouter)
 
@@ -31,9 +32,14 @@ const routes = [
             {
                 path: ':id',
                 name: 'Post',
-                component: Article,
+                component: ArticlePage,
             },
         ],
+    },
+    {
+        path: '/create-article',
+        component: Today,
+        component: CreateArticle,
     },
 ]
 

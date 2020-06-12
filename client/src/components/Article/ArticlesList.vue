@@ -32,7 +32,7 @@ export default {
     async created() {
         const res = await fetch(`${process.env.VUE_APP_API_URL}/articles`)
         let json = await res.json()
-        json = [
+        let jsonl = [
             {
                 id: 1,
                 title: 'title today is this mfing title and this is a long one',
@@ -43,7 +43,7 @@ export default {
                 id: 2,
                 title: 'title today is this mfing title',
                 imageUrl:
-                    'https://images.unsplash.com/photo-1535332371349-a5d229f49cb5?ixlib=rb-1.2.1&w=1000&q=80',
+                    'https://image.freepik.com/free-photo/image-human-brain_99433-298.jpg',
             },
             {
                 id: 3,

@@ -1,15 +1,17 @@
 <template>
     <span>
-        <div class="body-cmp">
+        <Loader v-if="!article" />
+        <div class="body-cmp" v-else>
             <div class="image">
                 <transition>
                     <div id="map" :class="hideMap ? 'show' : 'hide'"></div>
                 </transition>
-                <img
-                    src="https://cdn.spacetelescope.org/archives/images/wallpaper2/heic2007a.jpg"
-                    alt=""
-                />
-                <button class="like" @click="like()">
+                <img :src="article.imageUrl" :alt="article.title" />
+                <button
+                    class="like"
+                    @click="like()"
+                    :style="!liked || 'opacity: 1'"
+                >
                     <i class="material-icons" v-if="!liked">favorite_border</i>
                     <i class="material-icons fill" v-else>favorite</i>
                 </button>
@@ -23,21 +25,14 @@
             </div>
             <div class="content">
                 <div>
-                    <h1 class="title">Title for today is this title</h1>
-                    <p class="date">Date: 22 june 2020</p>
-                    <p class="author">Author: Jhon Doe</p>
+                    <h1 class="title">{{ article.title }}</h1>
+                    <p class="date">Date: {{ article.date }}</p>
+                    <p class="author">Author: {{ article.authorName }}</p>
+                    <p class="event">Event: {{ article.eventName }}</p>
+                    {{ article.likes }}
                 </div>
                 <p class="information">
-                    Lorem Ipsum is simply dummy text of the printing and
-                    typesetting industry. Lorem Ipsum has been the industry's
-                    standard dummy text ever since the 1500s, when an unknown
-                    printer took a galley of type and scrambled it to make a
-                    type specimen book. It has survived not only five centuries,
-                    but also the leap into electronic typesetting, remaining
-                    essentially unchanged. It was popularised in the 1960s with
-                    the release of Letraset sheets containing Lorem Ipsum
-                    passages, and more recently with desktop publishing software
-                    like Aldus PageMaker including versions of Lorem Ipsum.
+                    {{ article.text }}
                 </p>
             </div>
         </div>
@@ -49,21 +44,54 @@ import 'ol/ol.css'
 import { Map, View } from 'ol'
 import TileLayer from 'ol/layer/Tile'
 import OSM from 'ol/source/OSM'
+import Loader from '../UI/Loader'
+import Sorry from '../UI/Sorry'
 export default {
+    components: {
+        Loader,
+        Sorry,
+    },
+    props: ['article'],
     data() {
         return {
             liked: false,
             map: null,
             hideMap: false,
-            article: null,
         }
     },
     methods: {
-        like() {
-            if (this.$store.getters.user) {
-                this.liked = !this.liked
-            } else {
+        async like() {
+            if (!this.$store.getters.user) {
                 this.$store.commit('modifyPopUp', true)
+                return
+            }
+            if (!this.liked) {
+                this.liked = !this.liked
+                const res = await fetch(
+                    `${process.env.VUE_APP_API_URL}/likes`,
+                    {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify({
+                            authorId: this.$store.getters.user.id,
+                            articleId: this.article.id,
+                        }),
+                    }
+                )
+                const json = await res.json()
+                console.log(json)
+            } else {
+                this.liked = !this.liked
+                const res = await fetch(
+                    `${process.env.VUE_APP_API_URL}/likes/${this.$store.getters.user.id}/${this.article.id}`,
+                    {
+                        method: 'DELETE',
+                    }
+                )
+                const json = await res.json()
+                console.log(json)
             }
         },
         toggleMap() {
@@ -77,29 +105,15 @@ export default {
                             }),
                         ],
                         view: new View({
-                            center: [
-                                this.article?.lat ?? 0,
-                                this.article?.long ?? 0,
-                            ],
+                            center: [this.article.locLat, this.article.locLong],
                             zoom: 5,
                         }),
                     })
                 }, 1000)
-                console.log(this.article?.lat ?? 0, this.article?.long ?? 0)
+                console.log(this.article.locLat, this.article.locLong)
             }
             this.hideMap = !this.hideMap
         },
-    },
-    async created() {
-        const res = await fetch(
-            `${process.env.VUE_APP_API_URL}/articles/${this.$route.params.id}`
-        )
-        const json = await res.json()
-        if (json.message) {
-            //handle error
-            return
-        }
-        this.article = json
     },
 }
 </script>
@@ -178,6 +192,9 @@ img {
 p {
     width: 100%;
 }
+h1 {
+    margin: 0.5rem 0;
+}
 button {
     cursor: pointer;
 }
@@ -188,7 +205,7 @@ button {
 }
 .content div {
     background-color: #1b1b1b;
-    padding: 1rem;
+    padding: 1rem 2rem 1rem;
     color: white;
     font-weight: bold;
     width: fit-content;
@@ -196,6 +213,12 @@ button {
 }
 .date {
     margin-bottom: 0;
+}
+.author {
+    margin: 0.25rem 0;
+}
+.event {
+    margin: 0 0 0.25rem;
 }
 .information {
     text-align: justify;

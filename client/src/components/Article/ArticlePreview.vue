@@ -1,6 +1,6 @@
 <template>
     <div>
-        <img :src="article.imageUrl" alt="" />
+        <img :src="article.imageUrl" :alt="article.title" />
         <p>{{ article.title }}</p>
     </div>
 </template>

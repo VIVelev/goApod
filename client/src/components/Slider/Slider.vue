@@ -1,9 +1,9 @@
 <template>
     <transition-group tag="div" class="container">
         <Slides
-            v-for="(img, index) of $store.getters.images"
+            v-for="(article, index) of $store.getters.articles"
             :key="index"
-            :img="img"
+            :article="article"
             :index="index"
         />
     </transition-group>
@@ -17,6 +17,9 @@ export default {
     },
     components: {
         Slides,
+    },
+    created() {
+        this.$store.dispatch('getArticles', 2)
     },
 }
 </script>

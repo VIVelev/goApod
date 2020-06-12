@@ -23,25 +23,23 @@ export default {
         }
     },
     async created() {
-        const res = await fetch(`${process.env.VUE_APP_API_URL}/apod`)
+        const res = await fetch(
+            `${process.env.VUE_APP_API_URL}/articles/${this.$route.params.id}`
+        )
         const json = await res.json()
         if (json.message) {
-            setTimeout(() => {
-                this.error = true
-                this.article = json
-            }, 500)
-        } else {
-            this.article = json
-            this.article.date = new Date(json.date).toString().slice(3, 15)
+            console.log(json.message)
+            //handle error
+            return
         }
-
-        console.log(json)
+        this.article = json
+        this.article.date = new Date(json.date).toString().slice(3, 15)
     },
 }
 </script>
 
 <style scoped>
 .root {
-    padding: 0.5rem;
+    padding: 1rem;
 }
 </style>

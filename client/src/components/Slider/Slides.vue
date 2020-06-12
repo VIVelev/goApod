@@ -3,8 +3,7 @@
         v-show="index === $store.getters.activeElement || side"
         :class="side ? 'side' : 'center'"
     >
-        <img :src="img" alt="picture" @click="openPost(index)" />
-        <!-- should go to the article -->
+        <img :src="article.imageUrl" alt="picture" @click="openPost(index)" />
         <template v-if="index === $store.getters.activeElement">
             <button @click="$store.commit('prev')" class="arrow">
                 <i class="material-icons">chevron_left</i>
@@ -12,7 +11,11 @@
             <button class="arrow right" @click="$store.commit('next')">
                 <i class="material-icons">chevron_right</i>
             </button>
-            <button class="like" @click="like()">
+            <button
+                class="like"
+                @click="like()"
+                :style="!liked || 'opacity: 1'"
+            >
                 <i class="material-icons" v-if="!liked">favorite_border</i>
                 <i class="material-icons fill" v-else>favorite</i>
             </button>
@@ -22,7 +25,7 @@
 
 <script>
 export default {
-    props: ['img', 'index'],
+    props: ['article', 'index'],
     data() {
         return {
             liked: false,
@@ -38,16 +41,43 @@ export default {
         },
     },
     methods: {
-        like() {
-            if (this.$store.getters.user) {
-                this.liked = !this.liked
-            } else {
+        async like() {
+            if (!this.$store.getters.user) {
                 this.$store.commit('modifyPopUp', true)
+                return
+            }
+            if (!this.liked) {
+                this.liked = !this.liked
+                const res = await fetch(
+                    `${process.env.VUE_APP_API_URL}/likes`,
+                    {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify({
+                            authorId: this.$store.getters.user.id,
+                            articleId: this.article.id,
+                        }),
+                    }
+                )
+                const json = await res.json()
+                console.log(json)
+            } else {
+                this.liked = !this.liked
+                const res = await fetch(
+                    `${process.env.VUE_APP_API_URL}/likes/${this.$store.getters.user.id}/${this.article.id}`,
+                    {
+                        method: 'DELETE',
+                    }
+                )
+                const json = await res.json()
+                console.log(json)
             }
         },
         openPost(index) {
             if (index === this.$store.getters.activeElement) {
-                this.$router.push('/today')
+                this.$router.push(`/posts/${this.article.id}`)
             }
         },
     },
