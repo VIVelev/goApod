@@ -66,8 +66,8 @@ var articleStatements = map[string]string{
 		group by art.id, aut.name, eve.name, loc.lat, loc.long`,
 
 	"Save": `
-		insert into articles
-		values (default, $1, $2, $3, $4, $5, $6)`,
+		insert into articles (id, title, image_url, text, author_id, date, event_id)
+		values (default, $1, $2, $3, $4, default, $5)`,
 
 	"DeleteArticleByID": `
 		delete from articles
@@ -190,7 +190,7 @@ func (a *Article) Save() errors.DatabaseError {
 	if _, err := database.Db.Exec(articleStatements["Save"],
 		a.Title, a.ImageURL,
 		a.Text, a.AuthorID,
-		a.Date, a.EventID); err != nil {
+		a.EventID); err != nil {
 
 		return &errors.InternalDatabaseError{Message: err.Error()}
 	}
