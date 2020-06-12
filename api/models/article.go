@@ -121,9 +121,9 @@ func GetArticleByID(id int) (Article, errors.DatabaseError) {
 		&ret.ID, &ret.Title,
 		&ret.ImageURL, &ret.Text,
 		&ret.AuthorID, &ret.Date,
-		&ret.AuthorName, &ret.EventName,
-		&ret.LocLat, &ret.LocLong,
-		&ret.LikesCount); err {
+		&ret.EventID, &ret.AuthorName,
+		&ret.EventName, &ret.LocLat,
+		&ret.LocLong, &ret.LikesCount); err {
 
 	case nil:
 		return ret, nil
