@@ -52,7 +52,7 @@ func Prepare() error {
 			image_url varchar not null,
 			text text not null,
 			author_id int references authors(id) not null,
-			date date not null,
+			date date default now(),
 			event_id int references events(id)
 		)`,
 
