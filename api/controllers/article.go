@@ -12,6 +12,15 @@ import (
 // ArticleController struct
 type ArticleController struct{}
 
+// articleRequest struct
+type articleRequest struct {
+	Title    string `json:"title"`
+	ImageURL string `json:"image_url"`
+	Text     string `json:"text"`
+	AuthorID string `json:"authorId"`
+	EventID  string `json:"eventId"`
+}
+
 // GetAll on GET /articles
 func (ArticleController) GetAll(c *gin.Context) {
 	articles, err := models.GetAllArticles()
@@ -86,8 +95,8 @@ func (ArticleController) GetAPOD(c *gin.Context) {
 
 // Create on POST /articles
 func (ArticleController) Create(c *gin.Context) {
-	var article models.Article
-	if err := c.ShouldBindJSON(&article); err != nil {
+	var articleReq articleRequest
+	if err := c.ShouldBindJSON(&articleReq); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{
 			"message": err.Error(),
 		})
@@ -95,6 +104,31 @@ func (ArticleController) Create(c *gin.Context) {
 		return
 	}
 
+	authorID, err := strconv.Atoi(articleReq.AuthorID)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{
+			"message": err.Error(),
+		})
+
+		return
+	}
+
+	eventID, err := strconv.Atoi(articleReq.EventID)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{
+			"message": err.Error(),
+		})
+
+		return
+	}
+
+	article := models.Article{
+		Title:    articleReq.Title,
+		ImageURL: articleReq.ImageURL,
+		Text:     articleReq.Text,
+		AuthorID: authorID,
+		EventID:  eventID,
+	}
 	if dbErr := article.Save(); dbErr != nil {
 		c.JSON(dbErr.Code(), gin.H{
 			"message": dbErr.Error(),

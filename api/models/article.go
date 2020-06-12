@@ -16,7 +16,7 @@ type Article struct {
 	Text     string `json:"text"`
 	AuthorID int    `json:"authorId"`
 	Date     string `json:"date"`
-	EventID  string `json:"eventId"`
+	EventID  int    `json:"eventId"`
 
 	// Foreign
 	AuthorName string  `json:"authorName"`

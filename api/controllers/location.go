@@ -11,8 +11,8 @@ import (
 // LocationController struct
 type LocationController struct{}
 
-// LocationRequest struct
-type LocationRequest struct {
+// locationRequest struct
+type locationRequest struct {
 	Lat  string `json:"lat"`
 	Long string `json:"long"`
 }
@@ -42,7 +42,7 @@ func (LocationController) GetByID(c *gin.Context) {
 
 // Create on POST /locations
 func (LocationController) Create(c *gin.Context) {
-	var locReq LocationRequest
+	var locReq locationRequest
 	if err := c.ShouldBindJSON(&locReq); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{
 			"message": err.Error(),
@@ -56,6 +56,8 @@ func (LocationController) Create(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, gin.H{
 			"message": err.Error(),
 		})
+
+		return
 	}
 
 	long, err := strconv.ParseFloat(locReq.Long, 64)
@@ -63,6 +65,8 @@ func (LocationController) Create(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, gin.H{
 			"message": err.Error(),
 		})
+
+		return
 	}
 
 	location := models.Location{
