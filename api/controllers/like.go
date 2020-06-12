@@ -43,6 +43,7 @@ func (LikeController) DeleteByAuthorAndArticle(c *gin.Context) {
 
 		return
 	}
+
 	articleID, err := strconv.Atoi(c.Param("articleId"))
 	if err != nil {
 		c.JSON(http.StatusUnprocessableEntity, gin.H{
@@ -57,6 +58,7 @@ func (LikeController) DeleteByAuthorAndArticle(c *gin.Context) {
 		c.JSON(dbErr.Code(), gin.H{
 			"message": dbErr.Error(),
 		})
+
 		return
 	}
 

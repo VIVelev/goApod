@@ -4,7 +4,6 @@ import (
 	"net/http"
 
 	"github.com/VIVelev/goApod/database"
-
 	"github.com/VIVelev/goApod/errors"
 )
 
@@ -36,7 +35,7 @@ func (l *Like) Save() errors.DatabaseError {
 
 // DeleteByAuthorAndArticle - delete like
 func (l *Like) DeleteByAuthorAndArticle() errors.DatabaseError {
-	result, err := database.Db.Exec(likeStatements["DeleteByAuthorAndArticle"])
+	result, err := database.Db.Exec(likeStatements["DeleteByAuthorAndArticle"], l.AuthorID, l.ArticleID)
 	if err != nil {
 		return &errors.InternalDatabaseError{Message: "Database error"}
 	}
