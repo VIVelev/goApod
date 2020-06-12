@@ -53,7 +53,7 @@ func Prepare() error {
 			text text not null,
 			author_id int references authors(id) not null,
 			date date not null,
-			article_id int references articles(id)
+			event_id int references events(id)
 		)`,
 
 		`create table if not exists events (

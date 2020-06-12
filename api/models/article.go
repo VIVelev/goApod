@@ -32,7 +32,7 @@ var articleStatements = map[string]string{
 		select art.*, aut.name, eve.name, loc.lat, loc.long, count(l)
 		from articles art
 		left join authors aut on art.author_id = aut.id
-		left join events eve on art.id = eve.article_id
+		left join events eve on art.event_id = eve.id
 		left join locations loc on eve.location_id = loc.id
 		left join likes l on art.id = l.article_id
 		group by art.id, aut.name, eve.name, loc.lat, loc.long`,
@@ -41,7 +41,7 @@ var articleStatements = map[string]string{
 		select art.*, aut.name, eve.name, loc.lat, loc.long, count(l)
 		from articles art
 		left join authors aut on art.author_id = aut.id
-		left join events eve on art.id = eve.article_id
+		left join events eve on art.event_id = eve.id
 		left join locations loc on eve.location_id = loc.id
 		left join likes l on art.id = l.article_id
 		where art.id = $1
@@ -59,7 +59,7 @@ var articleStatements = map[string]string{
 		select art.*, aut.name, eve.name, loc.lat, loc.long, count(l)
 		from articles art
 		left join authors aut on art.author_id = aut.id
-		left join events eve on art.id = eve.article_id
+		left join events eve on art.event_id = eve.id
 		left join locations loc on eve.location_id = loc.id
 		left join likes l on art.id = l.article_id
 		where art.date = $1
