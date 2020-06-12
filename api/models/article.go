@@ -16,6 +16,7 @@ type Article struct {
 	Text     string `json:"text"`
 	AuthorID int    `json:"authorId"`
 	Date     string `json:"date"`
+	EventID  string `json:"eventId"`
 
 	// Foreign
 	AuthorName string  `json:"authorName"`
@@ -189,7 +190,7 @@ func (a *Article) Save() errors.DatabaseError {
 	if _, err := database.Db.Exec(articleStatements["Save"],
 		a.Title, a.ImageURL,
 		a.Text, a.AuthorID,
-		a.Date); err != nil {
+		a.Date, a.EventID); err != nil {
 
 		return &errors.InternalDatabaseError{Message: err.Error()}
 	}
