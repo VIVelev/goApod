@@ -46,6 +46,13 @@ func Prepare() error {
 			long double precision not null
 		)`,
 
+		`create table if not exists events (
+			id serial primary key,
+			name varchar not null,
+			date date not null,
+			location_id int references locations(id)
+		)`,
+
 		`create table if not exists articles (
 			id serial primary key,
 			title varchar not null,
@@ -54,13 +61,6 @@ func Prepare() error {
 			author_id int references authors(id) not null,
 			date date default now(),
 			event_id int references events(id)
-		)`,
-
-		`create table if not exists events (
-			id serial primary key,
-			name varchar not null,
-			date date not null,
-			location_id int references locations(id)
 		)`,
 
 		`create table if not exists likes (
