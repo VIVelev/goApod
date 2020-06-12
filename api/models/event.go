@@ -43,7 +43,7 @@ func GetEventByID(id int) (Event, errors.DatabaseError) {
 	}
 }
 
-//Save saves the event
+// Save (insert) the event
 func (e *Event) Save() errors.DatabaseError {
 	if _, err := database.Db.Exec(eventStatements["Save"],
 		e.Name, e.Date, e.LocationID); err != nil {

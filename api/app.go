@@ -40,11 +40,13 @@ func main() {
 	authorController := controllers.AuthorController{}
 	likeController := controllers.LikeController{}
 	articleController := controllers.ArticleController{}
+	eventController := controllers.EventController{}
 
 	registerEntityControllers(app, map[string]interface{}{
 		"/authors":  authorController,
 		"/articles": articleController,
 		"/likes":    likeController,
+		"/events":   eventController,
 	})
 
 	app.POST("/auth", authorController.GetAuthorIDByName)
