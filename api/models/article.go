@@ -10,13 +10,13 @@ import (
 
 // Article model
 type Article struct {
-	ID       int    `json:"id"`
+	ID       int    `json:"id,string"`
 	Title    string `json:"title"`
 	ImageURL string `json:"imageUrl"`
 	Text     string `json:"text"`
-	AuthorID int    `json:"authorId"`
+	AuthorID int    `json:"authorId,string"`
 	Date     string `json:"date"`
-	EventID  int    `json:"eventId"`
+	EventID  int    `json:"eventId,string"`
 
 	// Foreign
 	AuthorName string  `json:"authorName"`
