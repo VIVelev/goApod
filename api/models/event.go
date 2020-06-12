@@ -45,11 +45,13 @@ func GetEventByID(id int) (Event, errors.DatabaseError) {
 
 // Save (insert) the event
 func (e *Event) Save() errors.DatabaseError {
-	if _, err := database.Db.Exec(eventStatements["Save"],
-		e.Name, e.Date, e.LocationID); err != nil {
+	id := 0
+	if err := database.Db.QueryRow(eventStatements["Save"],
+		e.Name, e.Date, e.LocationID).Scan(&id); err != nil {
 
 		return &errors.InternalDatabaseError{Message: err.Error()}
 	}
 
+	e.ID = id
 	return nil
 }
