@@ -174,9 +174,7 @@ func GetTopArticles(limit int) ([]Article, errors.DatabaseError) {
 			&article.ID, &article.Title,
 			&article.ImageURL, &article.Text,
 			&article.AuthorID, &article.Date,
-			&article.AuthorName, &article.EventName,
-			&article.LocLat, &article.LocLong,
-			&article.LikesCount); err != nil {
+			&article.EventID); err != nil {
 
 			return nil, &errors.InternalDatabaseError{Message: err.Error()}
 		}
