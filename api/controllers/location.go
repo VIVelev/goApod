@@ -11,6 +11,12 @@ import (
 // LocationController struct
 type LocationController struct{}
 
+// LocationRequest struct
+type LocationRequest struct {
+	Lat  string `json:"lat"`
+	Long string `json:"long"`
+}
+
 // GetByID on /locations/:id
 func (LocationController) GetByID(c *gin.Context) {
 	id, err := strconv.Atoi(c.Param("id"))
@@ -36,8 +42,8 @@ func (LocationController) GetByID(c *gin.Context) {
 
 // Create on POST /locations
 func (LocationController) Create(c *gin.Context) {
-	var location models.Location
-	if err := c.ShouldBindJSON(&location); err != nil {
+	var locReq LocationRequest
+	if err := c.ShouldBindJSON(&locReq); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{
 			"message": err.Error(),
 		})
@@ -45,6 +51,24 @@ func (LocationController) Create(c *gin.Context) {
 		return
 	}
 
+	lat, err := strconv.ParseFloat(locReq.Lat, 64)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{
+			"message": err.Error(),
+		})
+	}
+
+	long, err := strconv.ParseFloat(locReq.Long, 64)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{
+			"message": err.Error(),
+		})
+	}
+
+	location := models.Location{
+		Lat:  lat,
+		Long: long,
+	}
 	if dbErr := location.Save(); dbErr != nil {
 		c.JSON(dbErr.Code(), gin.H{
 			"message": dbErr.Error(),
