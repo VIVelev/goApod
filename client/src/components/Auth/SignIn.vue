@@ -1,5 +1,5 @@
 <template>
-    <form>
+    <form @submit.prevent="signIn">
         <h1>Sign In</h1>
         <div class="search">
             <i class="material-icons">search</i>
@@ -15,6 +15,7 @@
                 {{ user.name }}
             </p>
         </section>
+        <button type="submit">Sign In</button>
         <span>
             <p>Don't have an account?</p>
             <button type="button" @click="$emit('changeComponent', 'SignUp')">
@@ -33,6 +34,12 @@ export default {
             selected: null,
         }
     },
+    methods: {
+        signIn() {
+            this.$store.commit('changeUser', this.selected)
+            this.$store.commit('modifyPopUp', false)
+        },
+    },
     computed: {
         filteredUsers() {
             return this.users.filter(u => u.name.includes(this.name))
@@ -49,50 +56,55 @@ export default {
 
 <style scoped>
 h1 {
-    margin: 0;
+    margin: 0 auto;
+    color: #1b1b1b;
+    width: 80%;
 }
 .search {
-    border: 1px solid #555;
+    border: 2px solid #1b1b1b;
     border-radius: 20px;
-    margin: 1rem 0;
+    margin: 1rem auto;
     display: flex;
     align-items: center;
+    width: 80%;
 }
 .search input {
     padding: 0.7rem 0.5rem 0.55rem;
     border: none;
     border-radius: 20px;
+    font-size: 1rem;
     margin: 0;
-    color: #555;
+    color: #1b1b1b;
+    width: 100%;
 }
 .search i {
     margin-left: 0.75rem;
-    color: #555;
+    color: #1b1b1b;
 }
-input {
-    padding: 0.5rem;
-    font-size: 1rem;
+
+::placeholder {
+    color: #1b1b1b;
 }
 section {
-    max-height: 100px;
+    height: 100px;
     overflow-y: scroll;
-    margin: 0 1rem;
+    margin: 0 auto 1rem;
+    width: 70%;
 }
 form {
     display: flex;
     flex-direction: column;
-    max-width: 500px;
-    padding: 4rem 4rem 2rem;
+    width: 100%;
+    margin: auto;
+    padding: 4rem 0 2rem;
 }
-form {
-    display: flex;
-    flex-direction: column;
-}
+
 button {
     border: none;
     background-color: transparent;
     font-size: 1.3rem;
     cursor: pointer;
+    color: #1b1b1b;
 }
 p {
     cursor: pointer;

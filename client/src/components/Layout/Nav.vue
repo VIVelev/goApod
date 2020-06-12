@@ -7,7 +7,7 @@
             <div class="routes">
                 <li>
                     <router-link to="/posts" tag="p">
-                        All Posts
+                        Articles
                     </router-link>
                 </li>
                 <li>
@@ -50,7 +50,7 @@ nav {
     left: 0;
     right: 0;
     top: 0;
-    background-color: black;
+    background-color: #1b1b1b;
 }
 ul {
     margin: 0 auto;

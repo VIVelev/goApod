@@ -19,7 +19,7 @@ img {
 }
 p {
     margin: 0;
-    color: black;
+    color: #1b1b1b;
     text-shadow: -1.2px -1.2px 0 white, 1.2px -1.2px 0 white,
         -1.2px 1.2px 0 white, 1.2px 1.2px 0 white;
 }

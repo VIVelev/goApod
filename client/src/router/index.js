@@ -3,6 +3,8 @@ import VueRouter from 'vue-router'
 import Home from '../views/Home.vue'
 import Today from '../views/Today'
 import Posts from '../views/Posts'
+import Article from '../components/Article/Article'
+import ArticlesList from '../components/Article/ArticlesList'
 
 Vue.use(VueRouter)
 
@@ -19,8 +21,19 @@ const routes = [
     },
     {
         path: '/posts',
-        name: 'Posts',
         component: Posts,
+        children: [
+            {
+                path: '',
+                name: 'Posts',
+                component: ArticlesList,
+            },
+            {
+                path: ':id',
+                name: 'Post',
+                component: Article,
+            },
+        ],
     },
 ]
 

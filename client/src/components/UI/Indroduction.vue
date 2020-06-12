@@ -20,7 +20,7 @@ div {
     grid-template-rows: auto auto;
     align-content: center;
     height: 75vh;
-    background-color: black;
+    background-color: #1b1b1b;
 }
 @media (max-width: 1500px) {
     div {

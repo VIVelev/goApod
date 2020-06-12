@@ -20,9 +20,6 @@ export default {
 </script>
 
 <style scoped>
-* {
-    box-sizing: border-box;
-}
 .page-body {
     display: flex;
     flex-direction: column;
@@ -31,19 +28,30 @@ export default {
     display: flex;
     flex-direction: column;
     height: 100vh;
-    justify-content: center;
+    justify-content: flex-end;
     align-items: center;
+    /* position: relative; */
 }
 h1 {
     font-size: 4rem;
+    margin-top: 10rem;
+    text-align: center;
+    color: #1b1b1b;
+    /* top: 1rem; */
+    /* top: 10%; */
 }
 @media (max-width: 800px) {
     h1 {
-        font-size: 2rem;
+        font-size: 3rem;
     }
     p {
         font-size: 1rem;
         padding: 0.75rem 0;
+    }
+}
+@media (max-width: 500px) {
+    h1 {
+        font-size: 2rem;
     }
 }
 </style>

@@ -61,6 +61,7 @@ div {
 }
 img {
     max-height: 600px;
+    max-width: 100%;
     display: block;
     border-radius: 4px;
 }
@@ -75,6 +76,7 @@ img {
     background-color: transparent;
     position: absolute;
     top: 45%;
+    /* transform: translateY(-50%); */
     transition: 0.5s;
 }
 .like {
@@ -110,7 +112,10 @@ button:hover {
 }
 .center {
     position: absolute;
+    align-self: center;
+    transform: scale(1);
     z-index: 1;
+    box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.4), 0 6px 20px 0 rgba(0, 0, 0, 0.4);
 }
 p {
     margin: 0;

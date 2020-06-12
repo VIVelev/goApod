@@ -26,9 +26,13 @@ export default {
 <style scoped>
 div {
     position: fixed;
-    top: 35%;
+    /* top: 40%; */
+    /* transform: translateY(-50%); */
+    top: 0;
+    bottom: 0;
     left: 0;
     right: 0;
+    height: fit-content;
     width: 90%;
     background: white;
     border-radius: 4px;

@@ -27,8 +27,10 @@ export default {
     flex-direction: row;
     align-items: center;
     justify-content: center;
+    margin: auto;
     max-width: 1500px;
-    width: 100%;
-    overflow: hidden;
+    width: 90%;
+    overflow-x: hidden;
+    max-height: 600px;
 }
 </style>

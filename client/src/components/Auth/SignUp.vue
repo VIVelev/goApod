@@ -49,21 +49,28 @@ export default {
 form {
     display: flex;
     flex-direction: column;
-    max-width: 500px;
-    padding: 4rem 4rem 2rem;
+    padding: 4rem 0 2rem;
+    color: #1b1b1b;
+    width: 100%;
 }
 h1 {
-    margin: 0;
+    margin: 0 auto;
+    color: #1b1b1b;
+    width: 80%;
 }
 input {
     border: none;
     border-bottom: 2px solid #777;
     padding: 0.5rem;
-    margin: 2rem 0;
+    margin: 2rem auto;
     font-size: 1rem;
+    width: 80%;
+}
+::placeholder {
+    color: #1b1b1b;
 }
 input:focus {
-    border-color: black;
+    border-color: #1b1b1b;
 }
 
 button {
@@ -71,6 +78,7 @@ button {
     background-color: transparent;
     font-size: 1.3rem;
     cursor: pointer;
+    color: #1b1b1b;
 }
 span {
     display: flex;
