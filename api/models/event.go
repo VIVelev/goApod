@@ -9,10 +9,10 @@ import (
 
 // Event struct
 type Event struct {
-	ID         int    `json:"id"`
+	ID         int    `json:"id,string,omitempty"`
 	Name       string `json:"name"`
 	Date       string `json:"date"`
-	LocationID int    `json:"locationId"`
+	LocationID int    `json:"locationId,string,omitempty"`
 }
 
 var eventStatements = map[string]string{
