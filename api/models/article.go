@@ -2,6 +2,7 @@ package models
 
 import (
 	"database/sql"
+	"fmt"
 	"net/http"
 
 	"github.com/VIVelev/goApod/database"
@@ -143,15 +144,16 @@ func GetArticleByDate(date string) (Article, errors.DatabaseError) {
 		&ret.ID, &ret.Title,
 		&ret.ImageURL, &ret.Text,
 		&ret.AuthorID, &ret.Date,
-		&ret.AuthorName, &ret.EventName,
-		&ret.LocLat, &ret.LocLong,
-		&ret.LikesCount); err {
+		&ret.EventID, &ret.AuthorName,
+		&ret.EventName, &ret.LocLat,
+		&ret.LocLong, &ret.LikesCount); err {
 
 	case nil:
 		return ret, nil
 	case sql.ErrNoRows:
 		return ret, &errors.GenericError{Message: "No article for today ;(", HTTPCode: http.StatusNotFound}
 	default:
+		fmt.Println(err)
 		return ret, &errors.InternalDatabaseError{Message: err.Error()}
 	}
 }
