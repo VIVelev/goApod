@@ -16,6 +16,7 @@ type Article struct {
 	Text     string `json:"text"`
 	AuthorID int    `json:"authorId"`
 	Date     string `json:"date"`
+	EventID  string `json:"eventId"`
 
 	// Foreign
 	AuthorName string  `json:"authorName"`
@@ -31,7 +32,7 @@ var articleStatements = map[string]string{
 		select art.*, aut.name, eve.name, loc.lat, loc.long, count(l)
 		from articles art
 		left join authors aut on art.author_id = aut.id
-		left join events eve on art.id = eve.article_id
+		left join events eve on art.event_id = eve.id
 		left join locations loc on eve.location_id = loc.id
 		left join likes l on art.id = l.article_id
 		group by art.id, aut.name, eve.name, loc.lat, loc.long`,
@@ -40,7 +41,7 @@ var articleStatements = map[string]string{
 		select art.*, aut.name, eve.name, loc.lat, loc.long, count(l)
 		from articles art
 		left join authors aut on art.author_id = aut.id
-		left join events eve on art.id = eve.article_id
+		left join events eve on art.event_id = eve.id
 		left join locations loc on eve.location_id = loc.id
 		left join likes l on art.id = l.article_id
 		where art.id = $1
@@ -58,7 +59,7 @@ var articleStatements = map[string]string{
 		select art.*, aut.name, eve.name, loc.lat, loc.long, count(l)
 		from articles art
 		left join authors aut on art.author_id = aut.id
-		left join events eve on art.id = eve.article_id
+		left join events eve on art.event_id = eve.id
 		left join locations loc on eve.location_id = loc.id
 		left join likes l on art.id = l.article_id
 		where art.date = $1
@@ -189,7 +190,7 @@ func (a *Article) Save() errors.DatabaseError {
 	if _, err := database.Db.Exec(articleStatements["Save"],
 		a.Title, a.ImageURL,
 		a.Text, a.AuthorID,
-		a.Date); err != nil {
+		a.Date, a.EventID); err != nil {
 
 		return &errors.InternalDatabaseError{Message: err.Error()}
 	}

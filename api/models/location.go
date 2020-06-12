@@ -46,10 +46,12 @@ func GetLocationByID(id int) (Location, errors.DatabaseError) {
 
 // Save - saves the Location object on which you call this method
 func (l *Location) Save() errors.DatabaseError {
-	if _, err := database.Db.Exec(locationStatements["Save"], l.Lat, l.Long); err != nil {
+	id := 0
+	if err := database.Db.QueryRow(locationStatements["Save"], l.Lat, l.Long).Scan(&id); err != nil {
 		return &errors.InternalDatabaseError{Message: err.Error()}
 	}
 
+	l.ID = id
 	return nil
 }
 
